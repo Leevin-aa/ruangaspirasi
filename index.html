@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruang Aspirasi Esemkasa</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <button class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="sidebar-overlay" id="overlay"></div>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="image/logo.png" alt="Logo" class="logo-img">
+                <div class="logo-text">
+                    <h2>Ruang Aspirasi Esemkasa</h2>
+                    <p>Suarakan Aspirasi, Wujudkan Perubahan</p>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <a href="#" class="nav-link active"><i class="fas fa-home"></i> Beranda</a>
+                <a href="#" class="nav-link"><i class="fas fa-bullhorn"></i> Pengumuman</a>
+                <a href="#" class="nav-link"><i class="fas fa-comment-dots"></i> Kritik dan Saran</a>
+                <a href="#" class="nav-link"><i class="fas fa-tools"></i> Laporan Prasarana</a>
+            </nav>
+
+            <div class="sidebar-promo">
+                <img src="image/fotobawah.png" alt="Siswa" class="promo-img">
+                <div class="promo-content">
+                    <h3>Suaramu Berarti</h3>
+                    <p>Bersama kita ciptakan sekolah yang lebih baik</p>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <section class="hero">
+                <div class="hero-info">
+                    <h1>Selamat Datang Di <br> <span>Ruang Aspirasi Esemkasa</span></h1>
+                    <p>Sampaikan kritik, saran dan laporanmu untuk membantu mewujudkan sekolah yang lebih baik</p>
+                </div>
+                <div class="hero-graphic">
+                    <img src="image/fotoatas.png" alt="Ilustrasi Aspirasi">
+                </div>
+            </section>
+
+            <section class="action-grid">
+                <div class="card action-card">
+                    <div class="icon-circle bg-blue"><i class="fas fa-comment-alt"></i></div>
+                    <h3>Kritik & Saran</h3>
+                    <p>Beri kritik dan saran untuk memajukan sekolah</p>
+                    <button class="btn-primary">Sampaikan sekarang</button>
+                </div>
+                <div class="card action-card">
+                    <div class="icon-circle bg-yellow"><i class="fas fa-wrench"></i></div>
+                    <h3>Lapor Prasarana</h3>
+                    <p>Laporkan masalah dan kerusakan sekolah</p>
+                    <button class="btn-primary">Buat laporan sekarang</button>
+                </div>
+                <div class="card action-card">
+                    <div class="icon-circle bg-gray"><i class="fas fa-bell"></i></div>
+                    <h3>Pengumuman</h3>
+                    <p>Dapatkan informasi terbaru dari sekolah</p>
+                    <button class="btn-primary">Lihat pengumuman</button>
+                </div>
+            </section>
+
+            <div class="dashboard-flex">
+                <div class="card content-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-bullhorn"></i> Pengumuman Terbaru</h3>
+                        <a href="#" class="view-all">Lihat Semua</a>
+                    </div>
+                    <div class="announcement-list">
+                        <div class="news-item">
+                            <div class="date-badge">21</div>
+                            <div class="news-content">
+                                <h4>Upacara Hari Kartini</h4>
+                                <p>Selasa, 21 April 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                            </div>
+                        </div>
+                        <div class="news-item">
+                            <div class="date-badge">21</div>
+                            <div class="news-content">
+                                <h4>Upacara Hari Kartini</h4>
+                                <p>Selasa, 21 April 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card content-card stats-center">
+                    <h3><i class="fas fa-chart-pie"></i> Statistik Aspirasi</h3>
+                    <div class="chart-box">
+                        <div class="donut-chart" id="statChart">
+                            <div class="donut-inner">
+                                <span id="totalCount">0</span>
+                                <small>Total</small>
+                            </div>
+                        </div>
+                        <ul class="chart-legend">
+                            <li><span class="dot blue"></span> Kritik & Saran (<span id="percKritik">0</span>%)</li>
+                            <li><span class="dot yellow"></span> Lapor Prasarana (<span id="percLapor">0</span>%)</li>
+                            <li><span class="dot green"></span> Selesai (<span id="percSelesai">0</span>%)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
