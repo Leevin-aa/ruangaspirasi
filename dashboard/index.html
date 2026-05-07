@@ -66,7 +66,7 @@
                         </div>
                         <div class="db-stat-info">
                             <p class="db-stat-label">PENGUMUMAN</p>
-                            <h2 class="db-stat-number">0</h2>
+                            <h2 class="db-stat-number" id="statPengumuman">0</h2>
                             <p class="db-stat-sub">Total Pengumuman</p>
                         </div>
                         <a href="#" class="db-stat-link" data-target="db-Pengumuman">
@@ -80,7 +80,7 @@
                         </div>
                         <div class="db-stat-info">
                             <p class="db-stat-label">KRITIK SARAN</p>
-                            <h2 class="db-stat-number">0</h2>
+                            <h2 class="db-stat-number" id="statKritik">0</h2>
                             <p class="db-stat-sub">Total Laporan</p>
                         </div>
                         <a href="#" class="db-stat-link" data-target="db-KritikSaran">
@@ -94,7 +94,7 @@
                         </div>
                         <div class="db-stat-info">
                             <p class="db-stat-label">LAPOR PRASARANA</p>
-                            <h2 class="db-stat-number">0</h2>
+                            <h2 class="db-stat-number" id="statLaporan">0</h2>
                             <p class="db-stat-sub">Total Laporan</p>
                         </div>
                         <a href="#" class="db-stat-link" data-target="db-LaporPrasarana">
@@ -115,7 +115,7 @@
                             <a href="#" class="db-lihat-semua" data-target="db-Pengumuman">Lihat Semua</a>
                         </div>
                         <!-- Wrapper scroll preview -->
-                        <div class="db-preview-scroll">
+                        <div class="db-preview-scroll" id="previewPengumuman">
                             <div class="db-news-item">
                                 <div class="db-date-badge">21</div>
                                 <div class="db-news-content">
@@ -146,7 +146,7 @@
                             <span><i class="fas fa-comment-dots"></i> Kritik Dan Saran</span>
                             <a href="#" class="db-lihat-semua" data-target="db-KritikSaran">Lihat Semua</a>
                         </div>
-                        <div class="db-preview-scroll">
+                        <div class="db-preview-scroll" id="previewKritik">
                             <div class="db-laporan-item">
                                 <p class="db-laporan-teks">Saya sangat menyayangkan hal itu, saran saya berikan tanaman yang dampak di belakang sekolah</p>
                                 <div class="db-foto-list">
@@ -178,7 +178,7 @@
                             <span><i class="fas fa-tools"></i> Lapor Prasarana</span>
                             <a href="#" class="db-lihat-semua" data-target="db-LaporPrasarana">Lihat Semua</a>
                         </div>
-                        <div class="db-preview-scroll">
+                        <div class="db-preview-scroll" id="previewLaporan">
                             <div class="db-laporan-item">
                                 <p class="db-laporan-teks">Kursi kelas saya rusak, mohon di benarkan</p>
                                 <div class="db-foto-list">
@@ -282,7 +282,7 @@
 
                 <h2 class="db-page-title"><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
 
-                <div class="db-history-list">
+                <div class="db-history-list" id="historyKritik">
 
                     <!-- Item 1 -->
                     <div class="db-history-item db-laporan-card">
@@ -351,7 +351,7 @@
 
                 <h2 class="db-page-title"><i class="fas fa-tools"></i> Laporan Prasarana</h2>
 
-                <div class="db-history-list">
+                <div class="db-history-list" id="historyLaporan">
 
                     <!-- Item 1 -->
                     <div class="db-history-item db-laporan-card">
@@ -416,6 +416,16 @@
         </main>
         <!-- Akhir Konten Utama -->
 
+    </div>
+
+    <!-- Modal Preview Foto Dashboard -->
+    <div class="modal-overlay" id="modalFotoDB" style="display:none;">
+        <div class="modal-box">
+            <button class="modal-close" id="modalFotoCloseDB">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="modalFotoImgDB" src="" alt="Preview Foto">
+        </div>
     </div>
 
     <script src="script.js"></script>

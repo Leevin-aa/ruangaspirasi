@@ -15,10 +15,25 @@ if (btnLogout) {
         window.location.href = 'login.html';
     }
 
-    // Logout
+    // Tampilkan nama admin di sapaan (opsional)
+    const namaAdmin = sessionStorage.getItem('namaAdmin');
+    const elSapaan  = document.getElementById('sapaan');
+    if (elSapaan && namaAdmin) {
+        elSapaan.innerText = 'Selamat datang, ' + namaAdmin + '!';
+    }
+
+    // Tombol logout
     btnLogout.addEventListener('click', function() {
-        sessionStorage.clear();
-        window.location.href = 'login.html';
+
+        // Hapus session di PHP juga
+        fetch('../api/login.php', {
+            method  : 'DELETE',
+            headers : { 'Content-Type': 'application/json' }
+        })
+        .finally(function() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
     });
 }
 
@@ -30,9 +45,6 @@ if (btnLogout) {
 const btnLogin = document.getElementById('btnLogin');
 if (btnLogin) {
 
-    const USERNAME_VALID = 'etminsekolah';
-    const PASSWORD_VALID = 'admin#1234';
-
     // Jika sudah login, langsung masuk
     if (sessionStorage.getItem('sudahLogin') === 'true') {
         window.location.href = 'index.html';
@@ -43,13 +55,51 @@ if (btnLogin) {
         const password = document.getElementById('inputPassword').value;
         const errorMsg = document.getElementById('errorMsg');
 
-        if (username === USERNAME_VALID && password === PASSWORD_VALID) {
-            sessionStorage.setItem('sudahLogin', 'true');
-            sessionStorage.setItem('namaAdmin', username);
-            window.location.href = 'index.html';
-        } else {
+        // Validasi kosong
+        if (!username || !password) {
+            errorMsg.innerText  = 'Username dan password harus diisi!';
             errorMsg.style.display = 'block';
+            return;
         }
+
+        // Nonaktifkan tombol saat proses
+        btnLogin.disabled    = true;
+        btnLogin.innerText   = 'Memproses...';
+        errorMsg.style.display = 'none';
+
+        // Kirim ke API PHP
+        fetch('../api/login.php', {
+            method  : 'POST',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ username, password })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+
+            if (data.status === 'success') {
+                // Simpan session di browser
+                sessionStorage.setItem('sudahLogin', 'true');
+                sessionStorage.setItem('namaAdmin', data.data.username);
+
+                // Masuk ke dashboard
+                window.location.href = 'index.html';
+
+            } else {
+                // Tampilkan error
+                errorMsg.innerText     = data.message;
+                errorMsg.style.display = 'block';
+
+                btnLogin.disabled  = false;
+                btnLogin.innerText = 'LOGIN';
+            }
+        })
+        .catch(function(err) {
+            errorMsg.innerText     = 'Gagal terhubung ke server. Coba lagi.';
+            errorMsg.style.display = 'block';
+
+            btnLogin.disabled  = false;
+            btnLogin.innerText = 'LOGIN';
+        });
     }
 
     btnLogin.addEventListener('click', prosesLogin);
@@ -111,66 +161,455 @@ if (document.getElementById('db-Beranda')) {
 }
 
 // ============================================================
-// BAGIAN 4: FORM TAMBAH PENGUMUMAN
+// BAGIAN 4: LOAD DATA DARI DATABASE
 // ============================================================
 
+// ── Helper: Format tanggal Indonesia ──
+function formatTanggal(tanggalStr) {
+    const bulan = [
+        'Januari','Februari','Maret','April','Mei','Juni',
+        'Juli','Agustus','September','Oktober','November','Desember'
+    ];
+    const tgl = new Date(tanggalStr);
+    return tgl.getDate() + ' ' + bulan[tgl.getMonth()] + ' ' + tgl.getFullYear();
+}
+
+// ── Helper: Format datetime Indonesia ──
+function formatDatetime(datetimeStr) {
+    const dt = new Date(datetimeStr);
+    const tgl = dt.getDate().toString().padStart(2, '0');
+    const bln = (dt.getMonth() + 1).toString().padStart(2, '0');
+    const thn = dt.getFullYear();
+    const jam = dt.getHours().toString().padStart(2, '0');
+    const mnt = dt.getMinutes().toString().padStart(2, '0');
+    return tgl + '/' + bln + '/' + thn + ' ' + jam + '.' + mnt;
+}
+
+
+// ============================================================
+// BAGIAN 5: PENGUMUMAN
+// ============================================================
+
+function loadPengumuman() {
+    fetch('../api/pengumuman.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status !== 'success') return;
+
+        const list    = document.getElementById('historyPengumuman');
+        const preview = document.getElementById('previewPengumuman'); // di beranda
+
+        if (list) list.innerHTML = '';
+        if (preview) preview.innerHTML = '';
+
+        // Update stat card
+        const elStat = document.getElementById('statPengumuman');
+        if (elStat) elStat.innerText = data.data.length;
+
+        data.data.forEach(function(item) {
+            const tgl  = new Date(item.tanggal);
+            const hari = tgl.getDate();
+
+            // ── Item untuk halaman Pengumuman ──
+            if (list) {
+                const div = document.createElement('div');
+                div.classList.add('db-history-item');
+                div.dataset.id = item.id;
+                div.innerHTML = `
+                    <div class="db-date-badge">${hari}</div>
+                    <div class="db-news-content">
+                        <h4>${item.judul}</h4>
+                        <p>${item.deskripsi}</p>
+                        <span class="db-tanggal">${formatTanggal(item.tanggal)}</span>
+                    </div>
+                    <button class="db-btn-hapus" title="Hapus">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+
+                // Bind tombol hapus
+                div.querySelector('.db-btn-hapus').addEventListener('click', function() {
+                    hapusPengumuman(item.id, div);
+                });
+
+                list.appendChild(div);
+            }
+
+            // ── Item untuk preview di Beranda ──
+            if (preview) {
+                const div = document.createElement('div');
+                div.classList.add('db-news-item');
+                div.innerHTML = `
+                    <div class="db-date-badge">${hari}</div>
+                    <div class="db-news-content">
+                        <h4>${item.judul}</h4>
+                        <p>${item.deskripsi}</p>
+                    </div>
+                `;
+                preview.appendChild(div);
+            }
+        });
+    })
+    .catch(function() {
+        console.warn('Gagal memuat data pengumuman');
+    });
+}
+
+function hapusPengumuman(id, elDiv) {
+    if (!confirm('Hapus pengumuman ini?')) return;
+
+    fetch('../api/pengumuman.php', {
+        method  : 'DELETE',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ id: id })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            elDiv.remove();
+            loadPengumuman(); // refresh stat
+        } else {
+            alert('Gagal menghapus: ' + data.message);
+        }
+    });
+}
+
+// Form tambah pengumuman
 const btnUmumkan = document.getElementById('btnUmumkan');
 if (btnUmumkan) {
     btnUmumkan.addEventListener('click', function() {
 
-        const tanggal  = document.getElementById('inputTanggal').value;
-        const judul    = document.getElementById('inputJudul').value.trim();
+        const tanggal   = document.getElementById('inputTanggal').value;
+        const judul     = document.getElementById('inputJudul').value.trim();
         const deskripsi = document.getElementById('inputDeskripsi').value.trim();
 
-        // Validasi
         if (!tanggal || !judul || !deskripsi) {
             alert('Semua kolom harus diisi!');
             return;
         }
 
-        // Format tanggal → ambil hari saja untuk badge
-        const tgl = new Date(tanggal);
-        const hari = tgl.getDate();
-        const bulanNama = tgl.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        btnUmumkan.disabled   = true;
+        btnUmumkan.innerText  = 'Menyimpan...';
 
-        // Buat item baru
-        const itemBaru = document.createElement('div');
-        itemBaru.classList.add('db-history-item');
-        itemBaru.innerHTML = `
-            <div class="db-date-badge">${hari}</div>
-            <div class="db-news-content">
-                <h4>${judul}</h4>
-                <p>${deskripsi}</p>
-                <span class="db-tanggal">${bulanNama}</span>
-            </div>
-            <button class="db-btn-hapus" title="Hapus"><i class="fas fa-trash"></i></button>
-        `;
-
-        // Tambahkan ke history list
-        const historyList = document.getElementById('historyPengumuman');
-        historyList.prepend(itemBaru); // taruh di paling atas
-
-        // Bind tombol hapus pada item baru
-        itemBaru.querySelector('.db-btn-hapus').addEventListener('click', function() {
-            if (confirm('Hapus pengumuman ini?')) {
-                itemBaru.remove();
+        fetch('../api/pengumuman.php', {
+            method  : 'POST',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ tanggal, judul, deskripsi })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'success') {
+                alert('Pengumuman berhasil ditambahkan!');
+                document.getElementById('inputTanggal').value   = '';
+                document.getElementById('inputJudul').value     = '';
+                document.getElementById('inputDeskripsi').value = '';
+                loadPengumuman(); // refresh list
+            } else {
+                alert('Gagal: ' + data.message);
             }
-        });
-
-        // Reset form
-        document.getElementById('inputTanggal').value  = '';
-        document.getElementById('inputJudul').value    = '';
-        document.getElementById('inputDeskripsi').value = '';
-
-        alert('Pengumuman berhasil ditambahkan!');
-    });
-
-    // Bind tombol hapus pada item dummy yang sudah ada
-    document.querySelectorAll('#historyPengumuman .db-btn-hapus').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            if (confirm('Hapus pengumuman ini?')) {
-                btn.closest('.db-history-item').remove();
-            }
+        })
+        .finally(function() {
+            btnUmumkan.disabled  = false;
+            btnUmumkan.innerHTML = '<i class="fas fa-paper-plane"></i> Umumkan';
         });
     });
+}
+
+
+// ============================================================
+// BAGIAN 6: KRITIK & SARAN
+// ============================================================
+
+function loadKritikSaran() {
+    fetch('../api/kritik.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status !== 'success') return;
+
+        const list    = document.getElementById('historyKritik');
+        const preview = document.getElementById('previewKritik');
+
+        if (list) list.innerHTML = '';
+        if (preview) preview.innerHTML = '';
+
+        // Update stat card
+        const elStat = document.getElementById('statKritik');
+        if (elStat) elStat.innerText = data.data.length;
+
+        data.data.forEach(function(item) {
+
+            // Buat HTML foto
+            let fotoHTML = '';
+            if (item.foto && item.foto.length > 0) {
+                item.foto.forEach(function(namaFile) {
+                    fotoHTML += `
+                        <img 
+                            src="../uploads/kritik_saran/${namaFile}" 
+                            class="db-foto-thumb"
+                            onclick="bukaModalFoto(this.src)"
+                            alt="Foto"
+                        >
+                    `;
+                });
+            }
+
+            const badgeClass = item.status === 'selesai' ? 'db-badge-selesai' : 'db-badge-pending';
+            const badgeTeks  = item.status === 'selesai' ? 'Selesai' : 'Pending';
+            const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
+
+            // ── Item untuk halaman Kritik & Saran ──
+            if (list) {
+                const div = document.createElement('div');
+                div.classList.add('db-history-item', 'db-laporan-card');
+                div.dataset.id = item.id;
+                div.innerHTML = `
+                    <div class="db-laporan-body">
+                        <p class="db-laporan-teks">${item.deskripsi}</p>
+                        <div class="db-foto-list">${fotoHTML}</div>
+                        <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+                    </div>
+                    <div class="db-laporan-actions">
+                        <span class="db-badge ${badgeClass}">${badgeTeks}</span>
+                        <button class="db-btn-selesai" ${btnDisabled}>
+                            <i class="fas fa-check"></i> 
+                            ${item.status === 'selesai' ? 'Selesai' : 'Tandai Selesai'}
+                        </button>
+                        <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+
+                // Bind tombol selesai
+                const btnSelesai = div.querySelector('.db-btn-selesai');
+                if (!btnSelesai.disabled) {
+                    btnSelesai.addEventListener('click', function() {
+                        updateStatusKritik(item.id, div);
+                    });
+                }
+
+                // Bind tombol hapus
+                div.querySelector('.db-btn-hapus').addEventListener('click', function() {
+                    hapusKritik(item.id, div);
+                });
+
+                list.appendChild(div);
+            }
+
+            // ── Item untuk preview di Beranda ──
+            if (preview) {
+                const div = document.createElement('div');
+                div.classList.add('db-laporan-item');
+                div.innerHTML = `
+                    <p class="db-laporan-teks">${item.deskripsi}</p>
+                    <div class="db-foto-list">${fotoHTML}</div>
+                    <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+                `;
+                preview.appendChild(div);
+            }
+        });
+    })
+    .catch(function() {
+        console.warn('Gagal memuat data kritik saran');
+    });
+}
+
+function updateStatusKritik(id, elDiv) {
+    fetch('../api/kritik.php', {
+        method  : 'PATCH',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ id: id, status: 'selesai' })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            loadKritikSaran(); // refresh
+        } else {
+            alert('Gagal update status: ' + data.message);
+        }
+    });
+}
+
+function hapusKritik(id, elDiv) {
+    if (!confirm('Hapus laporan ini?')) return;
+
+    fetch('../api/kritik.php', {
+        method  : 'DELETE',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ id: id })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            elDiv.remove();
+            loadKritikSaran();
+        } else {
+            alert('Gagal menghapus: ' + data.message);
+        }
+    });
+}
+
+
+// ============================================================
+// BAGIAN 7: LAPORAN PRASARANA
+// ============================================================
+
+function loadLaporanPrasarana() {
+    fetch('../api/laporan.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status !== 'success') return;
+
+        const list    = document.getElementById('historyLaporan');
+        const preview = document.getElementById('previewLaporan');
+
+        if (list) list.innerHTML = '';
+        if (preview) preview.innerHTML = '';
+
+        // Update stat card
+        const elStat = document.getElementById('statLaporan');
+        if (elStat) elStat.innerText = data.data.length;
+
+        data.data.forEach(function(item) {
+
+            let fotoHTML = '';
+            if (item.foto && item.foto.length > 0) {
+                item.foto.forEach(function(namaFile) {
+                    fotoHTML += `
+                        <img 
+                            src="../uploads/laporan_prasarana/${namaFile}" 
+                            class="db-foto-thumb"
+                            onclick="bukaModalFoto(this.src)"
+                            alt="Foto"
+                        >
+                    `;
+                });
+            }
+
+            const badgeClass  = item.status === 'selesai' ? 'db-badge-selesai' : 'db-badge-pending';
+            const badgeTeks   = item.status === 'selesai' ? 'Selesai' : 'Pending';
+            const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
+
+            // ── Item untuk halaman Laporan ──
+            if (list) {
+                const div = document.createElement('div');
+                div.classList.add('db-history-item', 'db-laporan-card');
+                div.dataset.id = item.id;
+                div.innerHTML = `
+                    <div class="db-laporan-body">
+                        <p class="db-laporan-teks">${item.deskripsi}</p>
+                        <div class="db-foto-list">${fotoHTML}</div>
+                        <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+                    </div>
+                    <div class="db-laporan-actions">
+                        <span class="db-badge ${badgeClass}">${badgeTeks}</span>
+                        <button class="db-btn-selesai" ${btnDisabled}>
+                            <i class="fas fa-check"></i>
+                            ${item.status === 'selesai' ? 'Selesai' : 'Tandai Selesai'}
+                        </button>
+                        <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+                `;
+
+                const btnSelesai = div.querySelector('.db-btn-selesai');
+                if (!btnSelesai.disabled) {
+                    btnSelesai.addEventListener('click', function() {
+                        updateStatusLaporan(item.id, div);
+                    });
+                }
+
+                div.querySelector('.db-btn-hapus').addEventListener('click', function() {
+                    hapusLaporan(item.id, div);
+                });
+
+                list.appendChild(div);
+            }
+
+            // ── Item untuk preview di Beranda ──
+            if (preview) {
+                const div = document.createElement('div');
+                div.classList.add('db-laporan-item');
+                div.innerHTML = `
+                    <p class="db-laporan-teks">${item.deskripsi}</p>
+                    <div class="db-foto-list">${fotoHTML}</div>
+                    <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+                `;
+                preview.appendChild(div);
+            }
+        });
+    })
+    .catch(function() {
+        console.warn('Gagal memuat data laporan prasarana');
+    });
+}
+
+function updateStatusLaporan(id, elDiv) {
+    fetch('../api/laporan.php', {
+        method  : 'PATCH',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ id: id, status: 'selesai' })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            loadLaporanPrasarana();
+        } else {
+            alert('Gagal update status: ' + data.message);
+        }
+    });
+}
+
+function hapusLaporan(id, elDiv) {
+    if (!confirm('Hapus laporan ini?')) return;
+
+    fetch('../api/laporan.php', {
+        method  : 'DELETE',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ id: id })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            elDiv.remove();
+            loadLaporanPrasarana();
+        } else {
+            alert('Gagal menghapus: ' + data.message);
+        }
+    });
+}
+
+
+// ============================================================
+// BAGIAN 8: MODAL PREVIEW FOTO
+// ============================================================
+
+function bukaModalFoto(src) {
+    const modal = document.getElementById('modalFotoDB');
+    const img   = document.getElementById('modalFotoImgDB');
+    if (modal && img) {
+        img.src = src;
+        modal.style.display = 'flex';
+    }
+}
+
+const modalFotoDB = document.getElementById('modalFotoDB');
+if (modalFotoDB) {
+    modalFotoDB.addEventListener('click', function(e) {
+        if (e.target === modalFotoDB) {
+            modalFotoDB.style.display = 'none';
+        }
+    });
+
+    document.getElementById('modalFotoCloseDB').addEventListener('click', function() {
+        modalFotoDB.style.display = 'none';
+    });
+}
+
+
+// ============================================================
+// BAGIAN 9: LOAD SEMUA DATA SAAT DASHBOARD DIBUKA
+// ============================================================
+
+if (document.getElementById('db-Beranda')) {
+    loadPengumuman();
+    loadKritikSaran();
+    loadLaporanPrasarana();
 }
