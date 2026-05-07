@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Ruang Aspirasi Esemkasa</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="db-container">
+
+        <!-- ============================================ -->
+        <!-- SIDEBAR DASHBOARD                           -->
+        <!-- ============================================ -->
+        <aside class="db-sidebar">
+
+            <div class="db-sidebar-header">
+                <img src="../image/logo.png" alt="Logo" class="db-logo">
+                <div>
+                    <h2>Dashboard Ruang Aspirasi Esemkasa</h2>
+                </div>
+            </div>
+
+            <nav class="db-nav">
+                <a href="#" class="db-nav-link active" data-target="db-Beranda">
+                    <i class="fas fa-home"></i> Beranda
+                </a>
+                <a href="#" class="db-nav-link" data-target="db-Pengumuman">
+                    <i class="fas fa-bullhorn"></i> Pengumuman
+                </a>
+                <a href="#" class="db-nav-link" data-target="db-KritikSaran">
+                    <i class="fas fa-comment-dots"></i> Kritik dan Saran
+                </a>
+                <a href="#" class="db-nav-link" data-target="db-LaporPrasarana">
+                    <i class="fas fa-tools"></i> Laporan Prasarana
+                </a>
+            </nav>
+
+            <button class="btn-logout" id="btnLogout">
+                <i class="fas fa-sign-out-alt"></i> LogOut
+            </button>
+
+        </aside>
+        <!-- Akhir Sidebar -->
+
+
+        <!-- ============================================ -->
+        <!-- KONTEN UTAMA                                -->
+        <!-- ============================================ -->
+        <main class="db-main">
+
+
+            <!-- ======================================== -->
+            <!-- HALAMAN 1: BERANDA DASHBOARD            -->
+            <!-- ======================================== -->
+            <div class="db-page" id="db-Beranda">
+
+                <!-- Stat Cards Atas -->
+                <div class="db-stat-grid">
+
+                    <div class="db-stat-card">
+                        <div class="db-stat-icon bg-blue">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="db-stat-info">
+                            <p class="db-stat-label">PENGUMUMAN</p>
+                            <h2 class="db-stat-number">0</h2>
+                            <p class="db-stat-sub">Total Pengumuman</p>
+                        </div>
+                        <a href="#" class="db-stat-link" data-target="db-Pengumuman">
+                            Lihat Semua <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="db-stat-card">
+                        <div class="db-stat-icon bg-blue">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div class="db-stat-info">
+                            <p class="db-stat-label">KRITIK SARAN</p>
+                            <h2 class="db-stat-number">0</h2>
+                            <p class="db-stat-sub">Total Laporan</p>
+                        </div>
+                        <a href="#" class="db-stat-link" data-target="db-KritikSaran">
+                            Lihat Semua <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="db-stat-card">
+                        <div class="db-stat-icon bg-blue">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="db-stat-info">
+                            <p class="db-stat-label">LAPOR PRASARANA</p>
+                            <h2 class="db-stat-number">0</h2>
+                            <p class="db-stat-sub">Total Laporan</p>
+                        </div>
+                        <a href="#" class="db-stat-link" data-target="db-LaporPrasarana">
+                            Lihat Semua <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                </div>
+                <!-- Akhir Stat Cards -->
+
+                <!-- Preview Cards Bawah -->
+                <div class="db-preview-grid">
+
+                    <!-- Pengumuman Terbaru -->
+                    <div class="db-card">
+                        <div class="db-card-header">
+                            <span><i class="fas fa-bullhorn"></i> Pengumuman Terbaru</span>
+                            <a href="#" class="db-lihat-semua" data-target="db-Pengumuman">Lihat Semua</a>
+                        </div>
+                        <!-- Wrapper scroll preview -->
+                        <div class="db-preview-scroll">
+                            <div class="db-news-item">
+                                <div class="db-date-badge">21</div>
+                                <div class="db-news-content">
+                                    <h4>Upacara Hari Kartini</h4>
+                                    <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                                </div>
+                            </div>
+                            <div class="db-news-item">
+                                <div class="db-date-badge">21</div>
+                                <div class="db-news-content">
+                                    <h4>Upacara Hari Kartini</h4>
+                                    <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                                </div>
+                            </div>
+                            <div class="db-news-item">
+                                <div class="db-date-badge">21</div>
+                                <div class="db-news-content">
+                                    <h4>Upacara Hari Kartini</h4>
+                                    <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kritik Dan Saran Terbaru -->
+                    <div class="db-card">
+                        <div class="db-card-header">
+                            <span><i class="fas fa-comment-dots"></i> Kritik Dan Saran</span>
+                            <a href="#" class="db-lihat-semua" data-target="db-KritikSaran">Lihat Semua</a>
+                        </div>
+                        <div class="db-preview-scroll">
+                            <div class="db-laporan-item">
+                                <p class="db-laporan-teks">Saya sangat menyayangkan hal itu, saran saya berikan tanaman yang dampak di belakang sekolah</p>
+                                <div class="db-foto-list">
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                </div>
+                                <p class="db-tanggal">13/05/2026 13.45</p>
+                            </div>
+                            <div class="db-laporan-item" style="margin-top:12px; padding-top:12px; border-top:1px solid #eee;">
+                                <p class="db-laporan-teks">Saya sangat menyayangkan hal itu, saran saya berikan tanaman yang dampak di belakang sekolah</p>
+                                <div class="db-foto-list">
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                </div>
+                                <p class="db-tanggal">13/05/2026 13.45</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lapor Prasarana Terbaru -->
+                    <div class="db-card">
+                        <div class="db-card-header">
+                            <span><i class="fas fa-tools"></i> Lapor Prasarana</span>
+                            <a href="#" class="db-lihat-semua" data-target="db-LaporPrasarana">Lihat Semua</a>
+                        </div>
+                        <div class="db-preview-scroll">
+                            <div class="db-laporan-item">
+                                <p class="db-laporan-teks">Kursi kelas saya rusak, mohon di benarkan</p>
+                                <div class="db-foto-list">
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                </div>
+                                <p class="db-tanggal">13/05/2026 13.45</p>
+                            </div>
+                            <div class="db-laporan-item" style="margin-top:12px; padding-top:12px; border-top:1px solid #eee;">
+                                <p class="db-laporan-teks">Kursi kelas saya rusak, mohon di benarkan</p>
+                                <div class="db-foto-list">
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                    <div class="db-foto-placeholder">PHOTO HERE</div>
+                                </div>
+                                <p class="db-tanggal">13/05/2026 13.45</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Akhir Preview Cards -->
+
+            </div>
+            <!-- Akhir Halaman Beranda -->
+
+
+            <!-- ======================================== -->
+            <!-- HALAMAN 2: PENGUMUMAN DASHBOARD         -->
+            <!-- ======================================== -->
+            <div class="db-page" id="db-Pengumuman" style="display:none;">
+
+                <!-- History Pengumuman -->
+                <h2 class="db-page-title"><i class="fas fa-bullhorn"></i> Pengumuman</h2>
+
+                <div class="db-history-list" id="historyPengumuman">
+
+                    <div class="db-history-item">
+                        <div class="db-date-badge">21</div>
+                        <div class="db-news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                            <span class="db-tanggal">21 April 2026</span>
+                        </div>
+                        <button class="db-btn-hapus" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                    <div class="db-history-item">
+                        <div class="db-date-badge">21</div>
+                        <div class="db-news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                            <span class="db-tanggal">21 April 2026</span>
+                        </div>
+                        <button class="db-btn-hapus" title="Hapus"><i class="fas fa-trash"></i></button>
+                    </div>
+
+                </div>
+
+                <!-- Garis Pemisah -->
+                <hr class="db-divider">
+
+                <!-- Form Tambah Pengumuman -->
+                <div class="db-form-card">
+                    <h3 class="db-form-title"><i class="fas fa-plus-circle"></i> Tambah Pengumuman Baru</h3>
+
+                    <div class="db-form-group">
+                        <label class="db-form-label">Tanggal Pengumuman</label>
+                        <input type="date" class="db-form-input" id="inputTanggal">
+                    </div>
+
+                    <div class="db-form-group">
+                        <label class="db-form-label">Judul Pengumuman</label>
+                        <input type="text" class="db-form-input" id="inputJudul" placeholder="Masukkan judul pengumuman...">
+                    </div>
+
+                    <div class="db-form-group">
+                        <label class="db-form-label">Deskripsi Pengumuman</label>
+                        <textarea class="db-form-input db-form-textarea" id="inputDeskripsi" placeholder="Masukkan deskripsi pengumuman..."></textarea>
+                    </div>
+
+                    <div class="db-form-footer">
+                        <button class="db-btn-submit" id="btnUmumkan">
+                            <i class="fas fa-paper-plane"></i> Umumkan
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <!-- Akhir Halaman Pengumuman -->
+
+
+            <!-- ======================================== -->
+            <!-- HALAMAN 3: KRITIK DAN SARAN DASHBOARD   -->
+            <!-- ======================================== -->
+            <div class="db-page" id="db-KritikSaran" style="display:none;">
+
+                <h2 class="db-page-title"><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
+
+                <div class="db-history-list">
+
+                    <!-- Item 1 -->
+                    <div class="db-history-item db-laporan-card">
+                        <div class="db-laporan-body">
+                            <p class="db-laporan-teks">Saya sangat menyayangkan hal itu, saran saya berikan tanaman yang dampak di belakang sekolah</p>
+                            <div class="db-foto-list">
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                            </div>
+                            <span class="db-tanggal">13/05/2026 13.45</span>
+                        </div>
+                        <div class="db-laporan-actions">
+                            <span class="db-badge db-badge-pending">Pending</span>
+                            <button class="db-btn-selesai"><i class="fas fa-check"></i> Tandai Selesai</button>
+                            <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="db-history-item db-laporan-card">
+                        <div class="db-laporan-body">
+                            <p class="db-laporan-teks">Toilet sekolah perlu diperbaiki, sudah banyak yang rusak</p>
+                            <div class="db-foto-list">
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                            </div>
+                            <span class="db-tanggal">12/05/2026 10.00</span>
+                        </div>
+                        <div class="db-laporan-actions">
+                            <span class="db-badge db-badge-selesai">Selesai</span>
+                            <button class="db-btn-selesai" disabled><i class="fas fa-check"></i> Selesai</button>
+                            <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="db-history-item db-laporan-card">
+                        <div class="db-laporan-body">
+                            <p class="db-laporan-teks">Kantin sekolah perlu ditambah variasi makanannya</p>
+                            <div class="db-foto-list">
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                            </div>
+                            <span class="db-tanggal">10/05/2026 08.30</span>
+                        </div>
+                        <div class="db-laporan-actions">
+                            <span class="db-badge db-badge-pending">Pending</span>
+                            <button class="db-btn-selesai"><i class="fas fa-check"></i> Tandai Selesai</button>
+                            <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Akhir Halaman Kritik dan Saran -->
+
+
+            <!-- ======================================== -->
+            <!-- HALAMAN 4: LAPORAN PRASARANA DASHBOARD  -->
+            <!-- ======================================== -->
+            <div class="db-page" id="db-LaporPrasarana" style="display:none;">
+
+                <h2 class="db-page-title"><i class="fas fa-tools"></i> Laporan Prasarana</h2>
+
+                <div class="db-history-list">
+
+                    <!-- Item 1 -->
+                    <div class="db-history-item db-laporan-card">
+                        <div class="db-laporan-body">
+                            <p class="db-laporan-teks">Kursi kelas saya rusak, mohon di benarkan</p>
+                            <div class="db-foto-list">
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                            </div>
+                            <span class="db-tanggal">13/05/2026 13.45</span>
+                        </div>
+                        <div class="db-laporan-actions">
+                            <span class="db-badge db-badge-pending">Pending</span>
+                            <button class="db-btn-selesai"><i class="fas fa-check"></i> Tandai Selesai</button>
+                            <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="db-history-item db-laporan-card">
+                        <div class="db-laporan-body">
+                            <p class="db-laporan-teks">Proyektor di ruang kelas 11 IPA 2 tidak berfungsi</p>
+                            <div class="db-foto-list">
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                            </div>
+                            <span class="db-tanggal">11/05/2026 09.15</span>
+                        </div>
+                        <div class="db-laporan-actions">
+                            <span class="db-badge db-badge-selesai">Selesai</span>
+                            <button class="db-btn-selesai" disabled><i class="fas fa-check"></i> Selesai</button>
+                            <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="db-history-item db-laporan-card">
+                        <div class="db-laporan-body">
+                            <p class="db-laporan-teks">Lampu di koridor lantai 2 mati semua, berbahaya saat malam</p>
+                            <div class="db-foto-list">
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                                <div class="db-foto-placeholder">PHOTO HERE</div>
+                            </div>
+                            <span class="db-tanggal">09/05/2026 14.00</span>
+                        </div>
+                        <div class="db-laporan-actions">
+                            <span class="db-badge db-badge-pending">Pending</span>
+                            <button class="db-btn-selesai"><i class="fas fa-check"></i> Tandai Selesai</button>
+                            <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!-- Akhir Halaman Laporan Prasarana -->
+
+
+        </main>
+        <!-- Akhir Konten Utama -->
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

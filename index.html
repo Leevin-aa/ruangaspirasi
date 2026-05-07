@@ -8,14 +8,29 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+
+    <!-- ================================================ -->
+    <!-- TOMBOL HAMBURGER (hanya muncul di mobile)        -->
+    <!-- ================================================ -->
     <button class="hamburger" id="hamburger">
         <i class="fas fa-bars"></i>
     </button>
 
+    <!-- Layar gelap saat sidebar terbuka di mobile -->
     <div class="sidebar-overlay" id="overlay"></div>
 
-    <div class="app-container">
+
+    <!-- ================================================ -->
+    <!-- WRAPPER UTAMA (Sidebar + Konten)                 -->
+    <!-- ================================================ -->
+    <div class="app-container" id="Navbar">
+
+        <!-- ============================================ -->
+        <!-- SIDEBAR / MENU NAVIGASI                      -->
+        <!-- ============================================ -->
         <aside class="sidebar" id="sidebar">
+
+            <!-- Logo & Judul -->
             <div class="sidebar-header">
                 <img src="image/logo.png" alt="Logo" class="logo-img">
                 <div class="logo-text">
@@ -24,13 +39,24 @@
                 </div>
             </div>
 
+            <!-- Menu Navigasi -->
+            <!-- data-target = ID halaman yang akan ditampilkan -->
             <nav class="nav-menu">
-                <a href="index.html" class="nav-link active"><i class="fas fa-home"></i> Beranda</a>
-                <a href="pengumuman.html" class="nav-link"><i class="fas fa-bullhorn"></i> Pengumuman</a>
-                <a href="#" class="nav-link"><i class="fas fa-comment-dots"></i> Kritik dan Saran</a>
-                <a href="#" class="nav-link"><i class="fas fa-tools"></i> Laporan Prasarana</a>
+                <a href="#" class="nav-link active" data-target="Beranda">
+                    <i class="fas fa-home"></i> Beranda
+                </a>
+                <a href="#" class="nav-link" data-target="Pengumuman">
+                    <i class="fas fa-bullhorn"></i> Pengumuman
+                </a>
+                <a href="#" class="nav-link" data-target="KritikSaran">
+                    <i class="fas fa-comment-dots"></i> Kritik dan Saran
+                </a>
+                <a href="#" class="nav-link" data-target="LaporPrasarana">
+                    <i class="fas fa-tools"></i> Laporan Prasarana
+                </a>
             </nav>
 
+            <!-- Gambar Promo Bawah Sidebar -->
             <div class="sidebar-promo">
                 <img src="image/fotobawah.png" alt="Siswa" class="promo-img">
                 <div class="promo-content">
@@ -38,9 +64,17 @@
                     <p>Bersama kita ciptakan sekolah yang lebih baik</p>
                 </div>
             </div>
-        </aside>
 
-        <main class="main-content">
+        </aside>
+        <!-- Akhir Sidebar -->
+
+
+        <!-- ============================================ -->
+        <!-- HALAMAN 1: BERANDA (ditampilkan pertama)     -->
+        <!-- ============================================ -->
+        <main class="main-content" id="Beranda">
+
+            <!-- Hero / Banner Atas -->
             <section class="hero">
                 <div class="hero-info">
                     <h1>Selamat Datang Di <br> <span>Ruang Aspirasi Esemkasa</span></h1>
@@ -51,28 +85,36 @@
                 </div>
             </section>
 
+            <!-- Kartu Aksi Cepat -->
             <section class="action-grid">
+
                 <div class="card action-card">
                     <div class="icon-circle bg-blue"><i class="fas fa-comment-alt"></i></div>
                     <h3>Kritik & Saran</h3>
                     <p>Beri kritik dan saran untuk memajukan sekolah</p>
                     <button class="btn-primary">Sampaikan sekarang</button>
                 </div>
+
                 <div class="card action-card">
                     <div class="icon-circle bg-yellow"><i class="fas fa-wrench"></i></div>
                     <h3>Lapor Prasarana</h3>
                     <p>Laporkan masalah dan kerusakan sekolah</p>
                     <button class="btn-primary">Buat laporan sekarang</button>
                 </div>
+
                 <div class="card action-card">
                     <div class="icon-circle bg-gray"><i class="fas fa-bell"></i></div>
                     <h3>Pengumuman</h3>
                     <p>Dapatkan informasi terbaru dari sekolah</p>
                     <button class="btn-primary">Lihat pengumuman</button>
                 </div>
+
             </section>
 
+            <!-- Dashboard Bawah: Pengumuman + Statistik -->
             <div class="dashboard-flex">
+
+                <!-- Pengumuman Terbaru -->
                 <div class="card content-card">
                     <div class="card-header">
                         <h3><i class="fas fa-bullhorn"></i> Pengumuman Terbaru</h3>
@@ -96,6 +138,7 @@
                     </div>
                 </div>
 
+                <!-- Statistik Donut Chart -->
                 <div class="card content-card stats-center">
                     <h3><i class="fas fa-chart-pie"></i> Statistik Aspirasi</h3>
                     <div class="chart-box">
@@ -112,9 +155,243 @@
                         </ul>
                     </div>
                 </div>
+
             </div>
+            <!-- Akhir Dashboard -->
+
         </main>
+        <!-- Akhir Halaman Beranda -->
+
+<!-- ============================================ -->
+        <!-- HALAMAN 2: PENGUMUMAN                        -->
+        <!-- ============================================ -->
+        <main class="main-content" id="Pengumuman" style="display:none;">
+
+            <div class="card content-card">
+                <div class="card-header">
+                    <h3><i class="fas fa-bullhorn"></i> Pengumuman Terbaru</h3>
+                </div>
+
+                <div class="announcement-list">
+
+                    <div class="news-item">
+                        <div class="date-badge">21</div>
+                        <div class="news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                        </div>
+                    </div>
+
+                    <div class="news-item">
+                        <div class="date-badge">21</div>
+                        <div class="news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                        </div>
+                    </div>
+
+                    <div class="news-item">
+                        <div class="date-badge">21</div>
+                        <div class="news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                        </div>
+                    </div>
+
+                    <div class="news-item">
+                        <div class="date-badge">21</div>
+                        <div class="news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                        </div>
+                    </div>
+
+                    <div class="news-item">
+                        <div class="date-badge">21</div>
+                        <div class="news-content">
+                            <h4>Upacara Hari Kartini</h4>
+                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </main>
+        <!-- Akhir Halaman Pengumuman -->
+
+<!-- ============================================ -->
+        <!-- HALAMAN 3: KRITIK DAN SARAN                 -->
+        <!-- ============================================ -->
+        <main class="main-content" id="KritikSaran" style="display:none;">
+
+            <h2><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
+
+            <div class="card form-card">
+                <div class="form-card-header">
+                    <i class="fas fa-comment-dots"></i>
+                    <h3>Kritik Dan Saran</h3>
+                </div>
+
+                <!-- Jenis Laporan (otomatis terisi, tidak bisa diubah) -->
+                <div class="form-group">
+                    <label class="form-label">Jenis Laporan</label>
+                    <input 
+                        type="text" 
+                        class="form-input input-disabled" 
+                        value="Kritik Dan Saran" 
+                        disabled
+                    >
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="form-group">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea 
+                        class="form-input form-textarea" 
+                        id="deskripsiKritik"
+                        placeholder="Tulis kritik atau saran kamu di sini..."
+                    ></textarea>
+                </div>
+
+                <!-- Upload Gambar (maks 5 foto) -->
+                <div class="form-group">
+                    <label class="form-label">Upload Image <span class="upload-info">(Maks. 5 foto)</span></label>
+
+                    <div class="upload-wrapper">
+
+                        <!-- Tombol Import -->
+                        <div class="upload-area" id="uploadAreaKritik">
+                            <input 
+                                type="file" 
+                                id="fileKritik" 
+                                accept="image/*" 
+                                multiple
+                                style="display:none;"
+                            >
+                            <div class="upload-placeholder">
+                                <i class="fas fa-arrow-up"></i>
+                                <p>Import Image</p>
+                            </div>
+                        </div>
+
+                        <!-- Thumbnail foto yang sudah diupload -->
+                        <div class="upload-preview-list" id="previewListKritik"></div>
+
+                    </div>
+
+                    <!-- Counter foto -->
+                    <p class="upload-counter" id="counterKritik">0 / 5 foto dipilih</p>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="form-footer">
+                    <button class="btn-submit" id="btnKirimKritik">Submit</button>
+                </div>
+
+            </div>
+
+            <!-- Modal Preview Foto -->
+            <div class="modal-overlay" id="modalPreview" style="display:none;">
+                <div class="modal-box">
+                    <button class="modal-close" id="modalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <img id="modalImg" src="" alt="Preview">
+                </div>
+            </div>
+
+        </main>
+        <!-- Akhir Halaman Kritik dan Saran -->
+
+<!-- ============================================ -->
+        <!-- HALAMAN 4: LAPORAN PRASARANA                -->
+        <!-- ============================================ -->
+        <main class="main-content" id="LaporPrasarana" style="display:none;">
+
+            <h2><i class="fas fa-tools"></i> Laporan Prasarana</h2>
+
+            <div class="card form-card">
+                <div class="form-card-header">
+                    <i class="fas fa-tools"></i>
+                    <h3>Laporan Prasarana</h3>
+                </div>
+
+                <!-- Jenis Laporan (otomatis terisi, tidak bisa diubah) -->
+                <div class="form-group">
+                    <label class="form-label">Jenis Laporan</label>
+                    <input 
+                        type="text" 
+                        class="form-input input-disabled" 
+                        value="Laporan Prasarana" 
+                        disabled
+                    >
+                </div>
+
+                <!-- Deskripsi -->
+                <div class="form-group">
+                    <label class="form-label">Deskripsi</label>
+                    <textarea 
+                        class="form-input form-textarea" 
+                        id="deskripsiLaporan"
+                        placeholder="Tulis laporan prasarana kamu di sini..."
+                    ></textarea>
+                </div>
+
+                <!-- Upload Gambar (maks 5 foto) -->
+                <div class="form-group">
+                    <label class="form-label">Upload Image <span class="upload-info">(Maks. 5 foto)</span></label>
+
+                    <div class="upload-wrapper">
+
+                        <!-- Tombol Import -->
+                        <div class="upload-area" id="uploadAreaLaporan">
+                            <input 
+                                type="file" 
+                                id="fileLaporan" 
+                                accept="image/*" 
+                                multiple
+                                style="display:none;"
+                            >
+                            <div class="upload-placeholder">
+                                <i class="fas fa-arrow-up"></i>
+                                <p>Import Image</p>
+                            </div>
+                        </div>
+
+                        <!-- Thumbnail foto yang sudah diupload -->
+                        <div class="upload-preview-list" id="previewListLaporan"></div>
+
+                    </div>
+
+                    <!-- Counter foto -->
+                    <p class="upload-counter" id="counterLaporan">0 / 5 foto dipilih</p>
+                </div>
+
+                <!-- Tombol Submit -->
+                <div class="form-footer">
+                    <button class="btn-submit" id="btnKirimLaporan">Submit</button>
+                </div>
+
+            </div>
+
+            <!-- Modal Preview Foto -->
+            <div class="modal-overlay" id="modalPreviewLaporan" style="display:none;">
+                <div class="modal-box">
+                    <button class="modal-close" id="modalCloseLaporan">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <img id="modalImgLaporan" src="" alt="Preview">
+                </div>
+            </div>
+
+        </main>
+        <!-- Akhir Halaman Laporan Prasarana -->
+
+
     </div>
+    <!-- Akhir app-container -->
+
 
     <script src="script.js"></script>
 </body>
