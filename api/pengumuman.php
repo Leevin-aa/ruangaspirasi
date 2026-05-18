@@ -1,11 +1,4 @@
 <?php
-// ================================================
-// API PENGUMUMAN
-// GET    → ambil semua pengumuman
-// POST   → tambah pengumuman baru
-// DELETE → hapus pengumuman
-// ================================================
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, DELETE');
@@ -14,7 +7,6 @@ require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ── GET: Ambil semua pengumuman ──
 if ($method === 'GET') {
 
     $result = $conn->query("SELECT * FROM pengumuman ORDER BY tanggal DESC");
@@ -27,7 +19,6 @@ if ($method === 'GET') {
     kirimResponse('success', 'Data pengumuman berhasil diambil', $data);
 }
 
-// ── POST: Tambah pengumuman baru ──
 elseif ($method === 'POST') {
 
     cekLogin();
@@ -37,12 +28,10 @@ elseif ($method === 'POST') {
     $judul    = isset($input['judul'])    ? trim($input['judul'])    : '';
     $deskripsi = isset($input['deskripsi']) ? trim($input['deskripsi']) : '';
 
-    // Validasi
     if (empty($tanggal) || empty($judul) || empty($deskripsi)) {
         kirimResponse('error', 'Semua kolom harus diisi');
     }
 
-    // Simpan ke database
     $stmt = $conn->prepare("INSERT INTO pengumuman (tanggal, judul, deskripsi) VALUES (?, ?, ?)");
     $stmt->bind_param('sss', $tanggal, $judul, $deskripsi);
 
@@ -56,7 +45,6 @@ elseif ($method === 'POST') {
     }
 }
 
-// ── DELETE: Hapus pengumuman ──
 elseif ($method === 'DELETE') {
 
     cekLogin();

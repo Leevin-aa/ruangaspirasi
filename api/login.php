@@ -10,10 +10,8 @@ session_start();
 $method = $_SERVER['REQUEST_METHOD'];
 
 
-// ── POST: Login ──
 if ($method === 'POST') {
 
-    // Jika sudah login
     if (isset($_SESSION['admin_id'])) {
         kirimResponse('success', 'Sudah login', [
             'username' => $_SESSION['admin_username']
@@ -28,7 +26,6 @@ if ($method === 'POST') {
         kirimResponse('error', 'Username dan password harus diisi');
     }
 
-    // Cari user di database
     $stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ?");
     $stmt->bind_param('s', $username);
     $stmt->execute();
@@ -36,13 +33,11 @@ if ($method === 'POST') {
     $user   = $result->fetch_assoc();
     $stmt->close();
 
-    // Verifikasi password
     if (!$user || !password_verify($password, $user['password'])) {
         http_response_code(401);
         kirimResponse('error', 'Username atau password salah');
     }
 
-    // Simpan ke session PHP
     $_SESSION['admin_id']       = $user['id'];
     $_SESSION['admin_username'] = $user['username'];
 
@@ -52,7 +47,6 @@ if ($method === 'POST') {
 }
 
 
-// ── DELETE: Logout ──
 elseif ($method === 'DELETE') {
     session_destroy();
     kirimResponse('success', 'Logout berhasil');

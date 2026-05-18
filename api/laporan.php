@@ -1,12 +1,4 @@
 <?php
-// ================================================
-// API LAPORAN PRASARANA
-// GET    → ambil semua laporan
-// POST   → tambah laporan baru (dari siswa)
-// PATCH  → update status
-// DELETE → hapus laporan
-// ================================================
-
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PATCH, DELETE');
@@ -15,7 +7,6 @@ require_once 'config.php';
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// ── GET ──
 if ($method === 'GET') {
 
     $result = $conn->query("SELECT * FROM laporan_prasarana ORDER BY created_at DESC");
@@ -41,7 +32,6 @@ if ($method === 'GET') {
     kirimResponse('success', 'Data laporan prasarana berhasil diambil', $data);
 }
 
-// ── POST ──
 elseif ($method === 'POST') {
 
     $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';
@@ -93,7 +83,6 @@ elseif ($method === 'POST') {
     kirimResponse('success', 'Laporan Prasarana berhasil dikirim', ['id' => $laporanId]);
 }
 
-// ── PATCH ──
 elseif ($method === 'PATCH') {
 
     cekLogin();
@@ -118,7 +107,6 @@ elseif ($method === 'PATCH') {
     }
 }
 
-// ── DELETE ──
 elseif ($method === 'DELETE') {
 
     cekLogin();

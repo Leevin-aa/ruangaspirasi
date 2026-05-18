@@ -1,30 +1,13 @@
-// ============================================================
-// RUANG ASPIRASI ESEMKASA - script.js
-// ============================================================
-
-
-// ============================================================
 // BAGIAN 1: AMBIL ELEMEN HTML
-// ============================================================
-
 const hamburger = document.getElementById('hamburger');
 const sidebar   = document.getElementById('sidebar');
 const overlay   = document.getElementById('overlay');
 const navLinks  = document.querySelectorAll('.nav-link');
 
-
-// ============================================================
 // BAGIAN 2: DAFTAR SEMUA ID HALAMAN
-// Jika buat halaman baru, tambahkan ID-nya di sini
-// ============================================================
-
 const semuaHalaman = ['Beranda', 'Pengumuman', 'KritikSaran', 'LaporPrasarana'];
 
-
-// ============================================================
 // BAGIAN 3: FUNGSI BUKA/TUTUP SIDEBAR (khusus mobile)
-// ============================================================
-
 function toggleSidebar() {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
@@ -37,24 +20,15 @@ function toggleSidebar() {
 hamburger.addEventListener('click', toggleSidebar);
 overlay.addEventListener('click', toggleSidebar);
 
-
-// ============================================================
 // BAGIAN 4: FUNGSI PINDAH HALAMAN
-// Sembunyikan semua → tampilkan yang dituju
-// ============================================================
-
-// Tandai halaman yang sudah pernah diinisialisasi
 const sudahInit = {};
 
-function tampilkanHalaman(idHalaman) {
-
-    // Sembunyikan semua halaman dulu
+function tampilkanHalaman(idHalaman) {      
     semuaHalaman.forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // Tampilkan halaman yang dituju
     const halamanTuju = document.getElementById(idHalaman);
     if (halamanTuju) {
         halamanTuju.style.display = 'block';
@@ -63,8 +37,6 @@ function tampilkanHalaman(idHalaman) {
         return;
     }
 
-    // Inisialisasi form hanya SEKALI saat pertama kali halaman dibuka
-    // Tujuan: agar event listener tidak terpasang dobel
     if (!sudahInit[idHalaman]) {
         sudahInit[idHalaman] = true;
 
@@ -72,18 +44,11 @@ function tampilkanHalaman(idHalaman) {
         if (idHalaman === 'LaporPrasarana') initFormLaporan();
     }
 }
-
-
-// ============================================================
 // BAGIAN 5: FUNGSI NAVIGASI + UPDATE ACTIVE NAVBAR
-// ============================================================
-
 function navigasiKe(idHalaman) {
 
-    // Pindah ke halaman yang dituju
     tampilkanHalaman(idHalaman);
 
-    // Update tampilan active di navbar
     navLinks.forEach(function(link) {
         link.classList.remove('active');
         if (link.dataset.target === idHalaman) {
@@ -91,12 +56,7 @@ function navigasiKe(idHalaman) {
         }
     });
 }
-
-
-// ============================================================
 // BAGIAN 6: EVENT KLIK PADA NAV-LINK
-// ============================================================
-
 navLinks.forEach(function(link) {
     link.addEventListener('click', function(e) {
         e.preventDefault();
@@ -107,18 +67,13 @@ navLinks.forEach(function(link) {
             navigasiKe(target);
         }
 
-        // Tutup sidebar otomatis jika di mobile
         if (window.innerWidth <= 992) {
             toggleSidebar();
         }
     });
 });
 
-
-// ============================================================
 // BAGIAN 7: TOMBOL ACTION CARD DI BERANDA
-// ============================================================
-
 function bindTombolActionCard() {
     const tombolKritik     = document.querySelector('.action-card:nth-child(1) .btn-primary');
     const tombolLapor      = document.querySelector('.action-card:nth-child(2) .btn-primary');
@@ -128,12 +83,7 @@ function bindTombolActionCard() {
     if (tombolLapor)      tombolLapor.addEventListener('click',      function() { navigasiKe('LaporPrasarana'); });
     if (tombolPengumuman) tombolPengumuman.addEventListener('click', function() { navigasiKe('Pengumuman'); });
 }
-
-
-// ============================================================
 // BAGIAN 8: STATISTIK ASPIRASI (Donut Chart)
-// ============================================================
-
 function updateStatistik(data) {
     const total    = data.kritik + data.lapor + data.selesai;
     const pKritik  = Math.round((data.kritik  / total) * 100);
@@ -160,23 +110,15 @@ function updateStatistik(data) {
     }
 }
 
-
-// ============================================================
 // BAGIAN 9: INISIALISASI SAAT HALAMAN PERTAMA LOAD
-// ============================================================
-
 window.onload = function() {
     tampilkanHalaman('Beranda');
     bindTombolActionCard();
     loadPengumumanWebUtama();
-    loadStatistikDariDB();    // ← tambahkan ini
+    loadStatistikDariDB();
 };
 
-
-// ============================================================
 // BAGIAN 10: FORM KRITIK & SARAN → KIRIM KE DATABASE
-// ============================================================
-
 function initFormKritikSaran() {
 
     const uploadArea  = document.getElementById('uploadAreaKritik');
@@ -192,7 +134,6 @@ function initFormKritikSaran() {
     const MAKS_FOTO = 5;
     let daftarFoto  = [];
 
-    // Klik area upload → buka file picker
     uploadArea.addEventListener('click', function () {
         if (daftarFoto.length >= MAKS_FOTO) {
             alert('Maksimal ' + MAKS_FOTO + ' foto!');
@@ -201,7 +142,6 @@ function initFormKritikSaran() {
         fileInput.click();
     });
 
-    // Saat file dipilih
     fileInput.addEventListener('change', function () {
         const fileBaru = Array.from(this.files);
 
@@ -222,7 +162,6 @@ function initFormKritikSaran() {
         fileInput.value = '';
     });
 
-    // Buat thumbnail
     function buatThumbnailKritik(srcGambar, index) {
         const wrapper = document.createElement('div');
         wrapper.classList.add('thumb-wrapper');
@@ -249,7 +188,6 @@ function initFormKritikSaran() {
         previewList.appendChild(wrapper);
     }
 
-    // Hapus foto
     function hapusFotoKritik(index) {
         daftarFoto.splice(index, 1);
         previewList.innerHTML = '';
@@ -265,7 +203,6 @@ function initFormKritikSaran() {
         updateCounterKritik();
     }
 
-    // Update counter
     function updateCounterKritik() {
         counter.innerText = daftarFoto.length + ' / ' + MAKS_FOTO + ' foto dipilih';
 
@@ -278,7 +215,6 @@ function initFormKritikSaran() {
         }
     }
 
-    // Tutup modal
     modalClose.addEventListener('click', function () {
         modal.style.display = 'none';
         modalImg.src        = '';
@@ -291,7 +227,6 @@ function initFormKritikSaran() {
         }
     });
 
-    // ── Submit → kirim ke API PHP ──
     btnKirim.addEventListener('click', function () {
         const isiDeskripsi = deskripsi.value.trim();
 
@@ -301,15 +236,12 @@ function initFormKritikSaran() {
             return;
         }
 
-        // Nonaktifkan tombol
         btnKirim.disabled   = true;
         btnKirim.innerText  = 'Mengirim...';
 
-        // Gunakan FormData karena ada file upload
         const formData = new FormData();
         formData.append('deskripsi', isiDeskripsi);
 
-        // Tambahkan semua foto
         daftarFoto.forEach(function(file, i) {
             formData.append('foto[]', file, file.name);
         });
@@ -317,14 +249,12 @@ function initFormKritikSaran() {
         fetch('api/kritik.php', {
             method : 'POST',
             body   : formData
-            // JANGAN set Content-Type, biarkan browser yang atur untuk FormData
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
             if (data.status === 'success') {
                 alert('Kritik & Saran berhasil dikirim! Terima kasih.');
 
-                // Reset form
                 deskripsi.value       = '';
                 daftarFoto            = [];
                 previewList.innerHTML = '';
@@ -343,13 +273,9 @@ function initFormKritikSaran() {
         });
     });
 
-} // ← TUTUP initFormKritikSaran
+}
 
-
-// ============================================================
 // BAGIAN 11: FORM LAPORAN PRASARANA → KIRIM KE DATABASE
-// ============================================================
-
 function initFormLaporan() {
 
     const uploadArea  = document.getElementById('uploadAreaLaporan');
@@ -365,7 +291,6 @@ function initFormLaporan() {
     const MAKS_FOTO = 5;
     let daftarFoto  = [];
 
-    // Klik area upload → buka file picker
     uploadArea.addEventListener('click', function () {
         if (daftarFoto.length >= MAKS_FOTO) {
             alert('Maksimal ' + MAKS_FOTO + ' foto!');
@@ -374,7 +299,6 @@ function initFormLaporan() {
         fileInput.click();
     });
 
-    // Saat file dipilih
     fileInput.addEventListener('change', function () {
         const fileBaru = Array.from(this.files);
 
@@ -395,7 +319,6 @@ function initFormLaporan() {
         fileInput.value = '';
     });
 
-    // Buat thumbnail
     function buatThumbnailLaporan(srcGambar, index) {
         const wrapper = document.createElement('div');
         wrapper.classList.add('thumb-wrapper');
@@ -422,7 +345,6 @@ function initFormLaporan() {
         previewList.appendChild(wrapper);
     }
 
-    // Hapus foto
     function hapusFotoLaporan(index) {
         daftarFoto.splice(index, 1);
         previewList.innerHTML = '';
@@ -438,7 +360,6 @@ function initFormLaporan() {
         updateCounterLaporan();
     }
 
-    // Update counter
     function updateCounterLaporan() {
         counter.innerText = daftarFoto.length + ' / ' + MAKS_FOTO + ' foto dipilih';
 
@@ -451,7 +372,6 @@ function initFormLaporan() {
         }
     }
 
-    // Tutup modal
     modalClose.addEventListener('click', function () {
         modal.style.display = 'none';
         modalImg.src        = '';
@@ -464,7 +384,6 @@ function initFormLaporan() {
         }
     });
 
-    // ── Submit → kirim ke API PHP ──
     btnKirim.addEventListener('click', function () {
         const isiDeskripsi = deskripsi.value.trim();
 
@@ -492,8 +411,6 @@ function initFormLaporan() {
         .then(function(data) {
             if (data.status === 'success') {
                 alert('Laporan Prasarana berhasil dikirim! Terima kasih.');
-
-                // Reset form
                 deskripsi.value       = '';
                 daftarFoto            = [];
                 previewList.innerHTML = '';
@@ -512,12 +429,9 @@ function initFormLaporan() {
         });
     });
 
-} // ← TUTUP initFormLaporan
+}
 
-// ============================================================
 // BAGIAN 12: LOAD PENGUMUMAN DARI DATABASE KE WEB UTAMA
-// ============================================================
-
 function loadPengumumanWebUtama() {
 
     fetch('api/pengumuman.php')
@@ -525,10 +439,8 @@ function loadPengumumanWebUtama() {
     .then(function(data) {
         if (data.status !== 'success') return;
 
-        // Update di halaman Beranda (preview 2 terbaru)
         const listBeranda = document.querySelector('#Beranda .announcement-list');
 
-        // Update di halaman Pengumuman (semua)
         const listPengumuman = document.querySelector('#Pengumuman .announcement-list');
 
         if (listBeranda) listBeranda.innerHTML   = '';
@@ -548,12 +460,10 @@ function loadPengumumanWebUtama() {
                 </div>
             `;
 
-            // Beranda hanya tampilkan 2 terbaru
             if (listBeranda && index < 2) {
                 listBeranda.innerHTML += itemHTML;
             }
 
-            // Halaman pengumuman tampilkan semua
             if (listPengumuman) {
                 listPengumuman.innerHTML += itemHTML;
             }
@@ -564,13 +474,8 @@ function loadPengumumanWebUtama() {
     });
 }
 
-// ============================================================
 // BAGIAN 13: STATISTIK ASPIRASI DARI DATABASE
-// ============================================================
-
 function loadStatistikDariDB() {
-
-    // Ambil data kritik & saran dan laporan prasarana secara bersamaan
     Promise.all([
         fetch('api/kritik.php').then(function(res) { return res.json(); }),
         fetch('api/laporan.php').then(function(res) { return res.json(); })
@@ -579,23 +484,19 @@ function loadStatistikDariDB() {
         const dataKritik  = hasil[0].status === 'success' ? hasil[0].data : [];
         const dataLaporan = hasil[1].status === 'success' ? hasil[1].data : [];
 
-        // Hitung total masing-masing
         const jumlahKritik  = dataKritik.length;
         const jumlahLaporan = dataLaporan.length;
 
-        // Hitung yang sudah selesai (gabungan dari kedua jenis)
         const jumlahSelesai =
             dataKritik.filter(function(i)  { return i.status === 'selesai'; }).length +
             dataLaporan.filter(function(i) { return i.status === 'selesai'; }).length;
 
         const total = jumlahKritik + jumlahLaporan;
 
-        // Hitung persentase
         const pKritik  = total > 0 ? Math.round((jumlahKritik  / total) * 100) : 0;
         const pLaporan = total > 0 ? Math.round((jumlahLaporan / total) * 100) : 0;
         const pSelesai = total > 0 ? (100 - pKritik - pLaporan)               : 0;
 
-        // Update angka di UI
         const elTotal   = document.getElementById('totalCount');
         const elKritik  = document.getElementById('percKritik');
         const elLapor   = document.getElementById('percLapor');
@@ -606,10 +507,8 @@ function loadStatistikDariDB() {
         if (elLapor)   elLapor.innerText   = pLaporan;
         if (elSelesai) elSelesai.innerText = pSelesai;
 
-        // Update donut chart
         const chart = document.getElementById('statChart');
         if (chart) {
-            // Kalau total 0, tampilkan chart abu-abu kosong
             if (total === 0) {
                 chart.style.background = '#e0e0e0';
             } else {

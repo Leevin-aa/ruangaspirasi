@@ -1,31 +1,19 @@
-// ============================================================
-// DASHBOARD - dashboard.js
-// ============================================================
-
-
-// ============================================================
 // BAGIAN 1: PROTEKSI & LOGOUT
-// ============================================================
-
 const btnLogout = document.getElementById('btnLogout');
 if (btnLogout) {
 
-    // Jika belum login → lempar ke login
     if (sessionStorage.getItem('sudahLogin') !== 'true') {
         window.location.href = 'login.html';
     }
 
-    // Tampilkan nama admin di sapaan (opsional)
     const namaAdmin = sessionStorage.getItem('namaAdmin');
     const elSapaan  = document.getElementById('sapaan');
     if (elSapaan && namaAdmin) {
         elSapaan.innerText = 'Selamat datang, ' + namaAdmin + '!';
     }
 
-    // Tombol logout
     btnLogout.addEventListener('click', function() {
 
-        // Hapus session di PHP juga
         fetch('../api/login.php', {
             method  : 'DELETE',
             headers : { 'Content-Type': 'application/json' }
@@ -38,14 +26,10 @@ if (btnLogout) {
 }
 
 
-// ============================================================
 // BAGIAN 2: LOGIN PAGE
-// ============================================================
-
 const btnLogin = document.getElementById('btnLogin');
 if (btnLogin) {
 
-    // Jika sudah login, langsung masuk
     if (sessionStorage.getItem('sudahLogin') === 'true') {
         window.location.href = 'index.html';
     }
@@ -55,19 +39,16 @@ if (btnLogin) {
         const password = document.getElementById('inputPassword').value;
         const errorMsg = document.getElementById('errorMsg');
 
-        // Validasi kosong
         if (!username || !password) {
             errorMsg.innerText  = 'Username dan password harus diisi!';
             errorMsg.style.display = 'block';
             return;
         }
 
-        // Nonaktifkan tombol saat proses
         btnLogin.disabled    = true;
         btnLogin.innerText   = 'Memproses...';
         errorMsg.style.display = 'none';
 
-        // Kirim ke API PHP
         fetch('../api/login.php', {
             method  : 'POST',
             headers : { 'Content-Type': 'application/json' },
@@ -77,15 +58,12 @@ if (btnLogin) {
         .then(function(data) {
 
             if (data.status === 'success') {
-                // Simpan session di browser
                 sessionStorage.setItem('sudahLogin', 'true');
                 sessionStorage.setItem('namaAdmin', data.data.username);
 
-                // Masuk ke dashboard
                 window.location.href = 'index.html';
 
             } else {
-                // Tampilkan error
                 errorMsg.innerText     = data.message;
                 errorMsg.style.display = 'block';
 
@@ -109,26 +87,20 @@ if (btnLogin) {
 }
 
 
-// ============================================================
 // BAGIAN 3: SPA DASHBOARD - PINDAH HALAMAN
-// ============================================================
-
 const dbPages    = ['db-Beranda', 'db-Pengumuman', 'db-KritikSaran', 'db-LaporPrasarana'];
 const dbNavLinks = document.querySelectorAll('.db-nav-link');
 
 function dbTampilkanHalaman(idHalaman) {
 
-    // Sembunyikan semua halaman
     dbPages.forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
     });
 
-    // Tampilkan halaman yang dituju
     const tuju = document.getElementById(idHalaman);
     if (tuju) tuju.style.display = 'block';
 
-    // Update active nav
     dbNavLinks.forEach(function(link) {
         link.classList.remove('active');
         if (link.dataset.target === idHalaman) {
@@ -137,7 +109,6 @@ function dbTampilkanHalaman(idHalaman) {
     });
 }
 
-// Klik nav link
 dbNavLinks.forEach(function(link) {
     link.addEventListener('click', function(e) {
         e.preventDefault();
@@ -146,7 +117,6 @@ dbNavLinks.forEach(function(link) {
     });
 });
 
-// Klik "Lihat Semua" di stat card & preview card
 document.querySelectorAll('.db-stat-link, .db-lihat-semua').forEach(function(link) {
     link.addEventListener('click', function(e) {
         e.preventDefault();
@@ -155,16 +125,11 @@ document.querySelectorAll('.db-stat-link, .db-lihat-semua').forEach(function(lin
     });
 });
 
-// Tampilkan Beranda saat pertama buka
 if (document.getElementById('db-Beranda')) {
     dbTampilkanHalaman('db-Beranda');
 }
 
-// ============================================================
 // BAGIAN 4: LOAD DATA DARI DATABASE
-// ============================================================
-
-// ── Helper: Format tanggal Indonesia ──
 function formatTanggal(tanggalStr) {
     const bulan = [
         'Januari','Februari','Maret','April','Mei','Juni',
@@ -174,7 +139,6 @@ function formatTanggal(tanggalStr) {
     return tgl.getDate() + ' ' + bulan[tgl.getMonth()] + ' ' + tgl.getFullYear();
 }
 
-// ── Helper: Format datetime Indonesia ──
 function formatDatetime(datetimeStr) {
     const dt = new Date(datetimeStr);
     const tgl = dt.getDate().toString().padStart(2, '0');
@@ -185,11 +149,7 @@ function formatDatetime(datetimeStr) {
     return tgl + '/' + bln + '/' + thn + ' ' + jam + '.' + mnt;
 }
 
-
-// ============================================================
 // BAGIAN 5: PENGUMUMAN
-// ============================================================
-
 function loadPengumuman() {
     fetch('../api/pengumuman.php')
     .then(function(res) { return res.json(); })
@@ -202,7 +162,6 @@ function loadPengumuman() {
         if (list) list.innerHTML = '';
         if (preview) preview.innerHTML = '';
 
-        // Update stat card
         const elStat = document.getElementById('statPengumuman');
         if (elStat) elStat.innerText = data.data.length;
 
@@ -210,7 +169,6 @@ function loadPengumuman() {
             const tgl  = new Date(item.tanggal);
             const hari = tgl.getDate();
 
-            // ── Item untuk halaman Pengumuman ──
             if (list) {
                 const div = document.createElement('div');
                 div.classList.add('db-history-item');
@@ -227,7 +185,6 @@ function loadPengumuman() {
                     </button>
                 `;
 
-                // Bind tombol hapus
                 div.querySelector('.db-btn-hapus').addEventListener('click', function() {
                     hapusPengumuman(item.id, div);
                 });
@@ -235,7 +192,6 @@ function loadPengumuman() {
                 list.appendChild(div);
             }
 
-            // ── Item untuk preview di Beranda ──
             if (preview) {
                 const div = document.createElement('div');
                 div.classList.add('db-news-item');
@@ -267,14 +223,13 @@ function hapusPengumuman(id, elDiv) {
     .then(function(data) {
         if (data.status === 'success') {
             elDiv.remove();
-            loadPengumuman(); // refresh stat
+            loadPengumuman();
         } else {
             alert('Gagal menghapus: ' + data.message);
         }
     });
 }
 
-// Form tambah pengumuman
 const btnUmumkan = document.getElementById('btnUmumkan');
 if (btnUmumkan) {
     btnUmumkan.addEventListener('click', function() {
@@ -303,7 +258,7 @@ if (btnUmumkan) {
                 document.getElementById('inputTanggal').value   = '';
                 document.getElementById('inputJudul').value     = '';
                 document.getElementById('inputDeskripsi').value = '';
-                loadPengumuman(); // refresh list
+                loadPengumuman();
             } else {
                 alert('Gagal: ' + data.message);
             }
@@ -315,11 +270,7 @@ if (btnUmumkan) {
     });
 }
 
-
-// ============================================================
 // BAGIAN 6: KRITIK & SARAN
-// ============================================================
-
 function loadKritikSaran() {
     fetch('../api/kritik.php')
     .then(function(res) { return res.json(); })
@@ -332,13 +283,11 @@ function loadKritikSaran() {
         if (list) list.innerHTML = '';
         if (preview) preview.innerHTML = '';
 
-        // Update stat card
         const elStat = document.getElementById('statKritik');
         if (elStat) elStat.innerText = data.data.length;
 
         data.data.forEach(function(item) {
 
-            // Buat HTML foto
             let fotoHTML = '';
             if (item.foto && item.foto.length > 0) {
                 item.foto.forEach(function(namaFile) {
@@ -357,7 +306,6 @@ function loadKritikSaran() {
             const badgeTeks  = item.status === 'selesai' ? 'Selesai' : 'Pending';
             const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
 
-            // ── Item untuk halaman Kritik & Saran ──
             if (list) {
                 const div = document.createElement('div');
                 div.classList.add('db-history-item', 'db-laporan-card');
@@ -378,7 +326,6 @@ function loadKritikSaran() {
                     </div>
                 `;
 
-                // Bind tombol selesai
                 const btnSelesai = div.querySelector('.db-btn-selesai');
                 if (!btnSelesai.disabled) {
                     btnSelesai.addEventListener('click', function() {
@@ -386,7 +333,6 @@ function loadKritikSaran() {
                     });
                 }
 
-                // Bind tombol hapus
                 div.querySelector('.db-btn-hapus').addEventListener('click', function() {
                     hapusKritik(item.id, div);
                 });
@@ -394,7 +340,6 @@ function loadKritikSaran() {
                 list.appendChild(div);
             }
 
-            // ── Item untuk preview di Beranda ──
             if (preview) {
                 const div = document.createElement('div');
                 div.classList.add('db-laporan-item');
@@ -421,7 +366,7 @@ function updateStatusKritik(id, elDiv) {
     .then(function(res) { return res.json(); })
     .then(function(data) {
         if (data.status === 'success') {
-            loadKritikSaran(); // refresh
+            loadKritikSaran();
         } else {
             alert('Gagal update status: ' + data.message);
         }
@@ -447,11 +392,7 @@ function hapusKritik(id, elDiv) {
     });
 }
 
-
-// ============================================================
 // BAGIAN 7: LAPORAN PRASARANA
-// ============================================================
-
 function loadLaporanPrasarana() {
     fetch('../api/laporan.php')
     .then(function(res) { return res.json(); })
@@ -464,7 +405,6 @@ function loadLaporanPrasarana() {
         if (list) list.innerHTML = '';
         if (preview) preview.innerHTML = '';
 
-        // Update stat card
         const elStat = document.getElementById('statLaporan');
         if (elStat) elStat.innerText = data.data.length;
 
@@ -488,7 +428,6 @@ function loadLaporanPrasarana() {
             const badgeTeks   = item.status === 'selesai' ? 'Selesai' : 'Pending';
             const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
 
-            // ── Item untuk halaman Laporan ──
             if (list) {
                 const div = document.createElement('div');
                 div.classList.add('db-history-item', 'db-laporan-card');
@@ -523,7 +462,6 @@ function loadLaporanPrasarana() {
                 list.appendChild(div);
             }
 
-            // ── Item untuk preview di Beranda ──
             if (preview) {
                 const div = document.createElement('div');
                 div.classList.add('db-laporan-item');
@@ -576,11 +514,7 @@ function hapusLaporan(id, elDiv) {
     });
 }
 
-
-// ============================================================
 // BAGIAN 8: MODAL PREVIEW FOTO
-// ============================================================
-
 function bukaModalFoto(src) {
     const modal = document.getElementById('modalFotoDB');
     const img   = document.getElementById('modalFotoImgDB');
@@ -602,12 +536,7 @@ if (modalFotoDB) {
         modalFotoDB.style.display = 'none';
     });
 }
-
-
-// ============================================================
 // BAGIAN 9: LOAD SEMUA DATA SAAT DASHBOARD DIBUKA
-// ============================================================
-
 if (document.getElementById('db-Beranda')) {
     loadPengumuman();
     loadKritikSaran();
