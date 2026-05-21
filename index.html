@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 
     <!-- ================================================ -->
@@ -40,7 +42,6 @@
             </div>
 
             <!-- Menu Navigasi -->
-            <!-- data-target = ID halaman yang akan ditampilkan -->
             <nav class="nav-menu">
                 <a href="#" class="nav-link active" data-target="Beranda">
                     <i class="fas fa-home"></i> Beranda
@@ -70,7 +71,7 @@
 
 
         <!-- ============================================ -->
-        <!-- HALAMAN 1: BERANDA (ditampilkan pertama)     -->
+        <!-- HALAMAN 1: BERANDA                          -->
         <!-- ============================================ -->
         <main class="main-content" id="Beranda">
 
@@ -118,23 +119,12 @@
                 <div class="card content-card">
                     <div class="card-header">
                         <h3><i class="fas fa-bullhorn"></i> Pengumuman Terbaru</h3>
-                        <a href="#" class="view-all">Lihat Semua</a>
+                        <a href="#" class="view-all" data-target="Pengumuman">Lihat Semua</a>
                     </div>
-                    <div class="announcement-list">
-                        <div class="news-item">
-                            <div class="date-badge">21</div>
-                            <div class="news-content">
-                                <h4>Upacara Hari Kartini</h4>
-                                <p>Selasa, 21 April 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                            </div>
-                        </div>
-                        <div class="news-item">
-                            <div class="date-badge">21</div>
-                            <div class="news-content">
-                                <h4>Upacara Hari Kartini</h4>
-                                <p>Selasa, 21 April 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                            </div>
-                        </div>
+
+                    <!-- Diisi otomatis oleh JavaScript dari database -->
+                    <div class="announcement-list" id="listPengumumanBeranda">
+                        <p style="color:#aaa; font-size:0.9rem;">Memuat pengumuman...</p>
                     </div>
                 </div>
 
@@ -148,10 +138,11 @@
                                 <small>Total</small>
                             </div>
                         </div>
+                        <!-- Legend: tampilkan angka total, bukan persen -->
                         <ul class="chart-legend">
-                            <li><span class="dot blue"></span> Kritik & Saran (<span id="percKritik">0</span>%)</li>
-                            <li><span class="dot yellow"></span> Lapor Prasarana (<span id="percLapor">0</span>%)</li>
-                            <li><span class="dot green"></span> Selesai (<span id="percSelesai">0</span>%)</li>
+                            <li><span class="dot blue"></span> Kritik &amp; Saran (<span id="percKritik">0</span>)</li>
+                            <li><span class="dot yellow"></span> Lapor Prasarana (<span id="percLapor">0</span>)</li>
+                            <li><span class="dot green"></span> Selesai (<span id="percSelesai">0</span>)</li>
                         </ul>
                     </div>
                 </div>
@@ -162,7 +153,8 @@
         </main>
         <!-- Akhir Halaman Beranda -->
 
-<!-- ============================================ -->
+
+        <!-- ============================================ -->
         <!-- HALAMAN 2: PENGUMUMAN                        -->
         <!-- ============================================ -->
         <main class="main-content" id="Pengumuman" style="display:none;">
@@ -172,55 +164,16 @@
                     <h3><i class="fas fa-bullhorn"></i> Pengumuman Terbaru</h3>
                 </div>
 
-                <div class="announcement-list">
-
-                    <div class="news-item">
-                        <div class="date-badge">21</div>
-                        <div class="news-content">
-                            <h4>Upacara Hari Kartini</h4>
-                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                        </div>
-                    </div>
-
-                    <div class="news-item">
-                        <div class="date-badge">21</div>
-                        <div class="news-content">
-                            <h4>Upacara Hari Kartini</h4>
-                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                        </div>
-                    </div>
-
-                    <div class="news-item">
-                        <div class="date-badge">21</div>
-                        <div class="news-content">
-                            <h4>Upacara Hari Kartini</h4>
-                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                        </div>
-                    </div>
-
-                    <div class="news-item">
-                        <div class="date-badge">21</div>
-                        <div class="news-content">
-                            <h4>Upacara Hari Kartini</h4>
-                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                        </div>
-                    </div>
-
-                    <div class="news-item">
-                        <div class="date-badge">21</div>
-                        <div class="news-content">
-                            <h4>Upacara Hari Kartini</h4>
-                            <p>Upacara akan dilaksanakan pada hari selasa 21 april 2026 pukul 07.00 di lapangan belakang sekolah</p>
-                        </div>
-                    </div>
-
+                <!-- Diisi otomatis oleh JavaScript dari database -->
+                <div class="announcement-list" id="listPengumumanHalaman">
+                    <p style="color:#aaa; font-size:0.9rem;">Memuat pengumuman...</p>
                 </div>
             </div>
 
         </main>
-        <!-- Akhir Halaman Pengumuman -->
 
-<!-- ============================================ -->
+
+        <!-- ============================================ -->
         <!-- HALAMAN 3: KRITIK DAN SARAN                 -->
         <!-- ============================================ -->
         <main class="main-content" id="KritikSaran" style="display:none;">
@@ -228,75 +181,57 @@
             <h2><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
 
             <div class="card form-card">
-                <div class="form-card-header">
-                    <i class="fas fa-comment-dots"></i>
-                    <h3>Kritik Dan Saran</h3>
-                </div>
+                <label class="form-label">Pengertian</label>
+                Kritik dan saran adalah dua bentuk evaluasi yang saling melengkapi dalam menilai kualitas suatu objek
+                secara objektif, di mana kritik berfungsi sebagai analisis logis berbasis data untuk mendeteksi
+                kelemahan atau kekurangan yang ada, sedangkan saran hadir sebagai usulan solusi konstruktif yang
+                berorientasi pada perbaikan di masa depan
+            </div>
 
-                <!-- Jenis Laporan (otomatis terisi, tidak bisa diubah) -->
+            <div class="card form-card">
                 <div class="form-group">
                     <label class="form-label">Jenis Laporan</label>
-                    <input 
-                        type="text" 
-                        class="form-input input-disabled" 
-                        value="Kritik Dan Saran" 
-                        disabled
-                    >
+                    <select class="form-input form-select" id="jenisKritik">
+                        <option value="">-- Pilih Jenis Laporan --</option>
+                        <option value="Kritik">Kritik</option>
+                        <option value="Saran">Saran</option>
+                    </select>
                 </div>
 
-                <!-- Deskripsi -->
                 <div class="form-group">
-                    <label class="form-label">Deskripsi</label>
-                    <textarea 
-                        class="form-input form-textarea" 
-                        id="deskripsiKritik"
-                        placeholder="Tulis kritik atau saran kamu di sini..."
-                    ></textarea>
+                    <label class="form-label">Detail Laporan</label>
+                    <textarea class="form-input form-textarea" id="deskripsiKritik"
+                        placeholder="Tulis kritik atau saran kamu di sini..."></textarea>
                 </div>
 
-                <!-- Upload Gambar (maks 5 foto) -->
                 <div class="form-group">
-                    <label class="form-label">Upload Image <span class="upload-info">(Maks. 5 foto)</span></label>
-
+                    <label class="form-label">
+                        Upload Image
+                        <span class="upload-info">(Maks. 5 foto, maks. 2MB per foto)</span>
+                        <span class="badge-opsional">Opsional</span>
+                    </label>
                     <div class="upload-wrapper">
-
-                        <!-- Tombol Import -->
                         <div class="upload-area" id="uploadAreaKritik">
-                            <input 
-                                type="file" 
-                                id="fileKritik" 
-                                accept="image/*" 
-                                multiple
-                                style="display:none;"
-                            >
+                            <input type="file" id="fileKritik" accept="image/*" multiple style="display:none;">
                             <div class="upload-placeholder">
                                 <i class="fas fa-arrow-up"></i>
                                 <p>Import Image</p>
                             </div>
                         </div>
-
-                        <!-- Thumbnail foto yang sudah diupload -->
                         <div class="upload-preview-list" id="previewListKritik"></div>
-
                     </div>
-
-                    <!-- Counter foto -->
                     <p class="upload-counter" id="counterKritik">0 / 5 foto dipilih</p>
                 </div>
 
-                <!-- Tombol Submit -->
                 <div class="form-footer">
                     <button class="btn-submit" id="btnKirimKritik">Submit</button>
                 </div>
-
             </div>
 
             <!-- Modal Preview Foto -->
             <div class="modal-overlay" id="modalPreview" style="display:none;">
                 <div class="modal-box">
-                    <button class="modal-close" id="modalClose">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
                     <img id="modalImg" src="" alt="Preview">
                 </div>
             </div>
@@ -304,7 +239,8 @@
         </main>
         <!-- Akhir Halaman Kritik dan Saran -->
 
-<!-- ============================================ -->
+
+        <!-- ============================================ -->
         <!-- HALAMAN 4: LAPORAN PRASARANA                -->
         <!-- ============================================ -->
         <main class="main-content" id="LaporPrasarana" style="display:none;">
@@ -312,75 +248,49 @@
             <h2><i class="fas fa-tools"></i> Laporan Prasarana</h2>
 
             <div class="card form-card">
-                <div class="form-card-header">
-                    <i class="fas fa-tools"></i>
-                    <h3>Laporan Prasarana</h3>
+                <label class="form-label">Pengertian</label>
+                Kritik dan saran adalah dua bentuk evaluasi yang saling melengkapi dalam menilai kualitas suatu objek
+                secara objektif, di mana kritik berfungsi sebagai analisis logis berbasis data untuk mendeteksi
+                kelemahan atau kekurangan yang ada, sedangkan saran hadir sebagai usulan solusi konstruktif yang
+                berorientasi pada perbaikan di masa depan
+            </div>
+
+            <div class="card form-card">
+
+                <div class="form-group">
+                    <label class="form-label">Detail Laporan</label>
+                    <textarea class="form-input form-textarea" id="deskripsiLaporan"
+                        placeholder="Tulis laporan prasarana kamu di sini..."></textarea>
                 </div>
 
-                <!-- Jenis Laporan (otomatis terisi, tidak bisa diubah) -->
                 <div class="form-group">
-                    <label class="form-label">Jenis Laporan</label>
-                    <input 
-                        type="text" 
-                        class="form-input input-disabled" 
-                        value="Laporan Prasarana" 
-                        disabled
-                    >
-                </div>
-
-                <!-- Deskripsi -->
-                <div class="form-group">
-                    <label class="form-label">Deskripsi</label>
-                    <textarea 
-                        class="form-input form-textarea" 
-                        id="deskripsiLaporan"
-                        placeholder="Tulis laporan prasarana kamu di sini..."
-                    ></textarea>
-                </div>
-
-                <!-- Upload Gambar (maks 5 foto) -->
-                <div class="form-group">
-                    <label class="form-label">Upload Image <span class="upload-info">(Maks. 5 foto)</span></label>
-
+                    <label class="form-label">
+                        Upload Image
+                        <span class="upload-info">(Maks. 5 foto, maks. 2MB per foto)</span>
+                        <span class="badge-wajib">Wajib</span>
+                    </label>
                     <div class="upload-wrapper">
-
-                        <!-- Tombol Import -->
                         <div class="upload-area" id="uploadAreaLaporan">
-                            <input 
-                                type="file" 
-                                id="fileLaporan" 
-                                accept="image/*" 
-                                multiple
-                                style="display:none;"
-                            >
+                            <input type="file" id="fileLaporan" accept="image/*" multiple style="display:none;">
                             <div class="upload-placeholder">
                                 <i class="fas fa-arrow-up"></i>
                                 <p>Import Image</p>
                             </div>
                         </div>
-
-                        <!-- Thumbnail foto yang sudah diupload -->
                         <div class="upload-preview-list" id="previewListLaporan"></div>
-
                     </div>
-
-                    <!-- Counter foto -->
                     <p class="upload-counter" id="counterLaporan">0 / 5 foto dipilih</p>
                 </div>
 
-                <!-- Tombol Submit -->
                 <div class="form-footer">
                     <button class="btn-submit" id="btnKirimLaporan">Submit</button>
                 </div>
-
             </div>
 
             <!-- Modal Preview Foto -->
             <div class="modal-overlay" id="modalPreviewLaporan" style="display:none;">
                 <div class="modal-box">
-                    <button class="modal-close" id="modalCloseLaporan">
-                        <i class="fas fa-times"></i>
-                    </button>
+                    <button class="modal-close" id="modalCloseLaporan"><i class="fas fa-times"></i></button>
                     <img id="modalImgLaporan" src="" alt="Preview">
                 </div>
             </div>
@@ -392,7 +302,7 @@
     </div>
     <!-- Akhir app-container -->
 
-
     <script src="script.js"></script>
 </body>
+
 </html>

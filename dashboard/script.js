@@ -1,3 +1,7 @@
+// ============================================================
+// DASHBOARD - script.js
+// ============================================================
+
 // BAGIAN 1: PROTEKSI & LOGOUT
 const btnLogout = document.getElementById('btnLogout');
 if (btnLogout) {
@@ -6,14 +10,7 @@ if (btnLogout) {
         window.location.href = 'login.html';
     }
 
-    const namaAdmin = sessionStorage.getItem('namaAdmin');
-    const elSapaan  = document.getElementById('sapaan');
-    if (elSapaan && namaAdmin) {
-        elSapaan.innerText = 'Selamat datang, ' + namaAdmin + '!';
-    }
-
     btnLogout.addEventListener('click', function() {
-
         fetch('../api/login.php', {
             method  : 'DELETE',
             headers : { 'Content-Type': 'application/json' }
@@ -24,7 +21,6 @@ if (btnLogout) {
         });
     });
 }
-
 
 // BAGIAN 2: LOGIN PAGE
 const btnLogin = document.getElementById('btnLogin');
@@ -40,13 +36,13 @@ if (btnLogin) {
         const errorMsg = document.getElementById('errorMsg');
 
         if (!username || !password) {
-            errorMsg.innerText  = 'Username dan password harus diisi!';
+            errorMsg.innerText     = 'Username dan password harus diisi!';
             errorMsg.style.display = 'block';
             return;
         }
 
-        btnLogin.disabled    = true;
-        btnLogin.innerText   = 'Memproses...';
+        btnLogin.disabled      = true;
+        btnLogin.innerText     = 'Memproses...';
         errorMsg.style.display = 'none';
 
         fetch('../api/login.php', {
@@ -56,27 +52,22 @@ if (btnLogin) {
         })
         .then(function(res) { return res.json(); })
         .then(function(data) {
-
             if (data.status === 'success') {
                 sessionStorage.setItem('sudahLogin', 'true');
                 sessionStorage.setItem('namaAdmin', data.data.username);
-
                 window.location.href = 'index.html';
-
             } else {
                 errorMsg.innerText     = data.message;
                 errorMsg.style.display = 'block';
-
-                btnLogin.disabled  = false;
-                btnLogin.innerText = 'LOGIN';
+                btnLogin.disabled      = false;
+                btnLogin.innerText     = 'LOGIN';
             }
         })
-        .catch(function(err) {
+        .catch(function() {
             errorMsg.innerText     = 'Gagal terhubung ke server. Coba lagi.';
             errorMsg.style.display = 'block';
-
-            btnLogin.disabled  = false;
-            btnLogin.innerText = 'LOGIN';
+            btnLogin.disabled      = false;
+            btnLogin.innerText     = 'LOGIN';
         });
     }
 
@@ -86,13 +77,11 @@ if (btnLogin) {
     });
 }
 
-
-// BAGIAN 3: SPA DASHBOARD - PINDAH HALAMAN
+// BAGIAN 3: SPA DASHBOARD
 const dbPages    = ['db-Beranda', 'db-Pengumuman', 'db-KritikSaran', 'db-LaporPrasarana'];
 const dbNavLinks = document.querySelectorAll('.db-nav-link');
 
 function dbTampilkanHalaman(idHalaman) {
-
     dbPages.forEach(function(id) {
         const el = document.getElementById(id);
         if (el) el.style.display = 'none';
@@ -103,9 +92,7 @@ function dbTampilkanHalaman(idHalaman) {
 
     dbNavLinks.forEach(function(link) {
         link.classList.remove('active');
-        if (link.dataset.target === idHalaman) {
-            link.classList.add('active');
-        }
+        if (link.dataset.target === idHalaman) link.classList.add('active');
     });
 }
 
@@ -129,24 +116,27 @@ if (document.getElementById('db-Beranda')) {
     dbTampilkanHalaman('db-Beranda');
 }
 
-// BAGIAN 4: LOAD DATA DARI DATABASE
-function formatTanggal(tanggalStr) {
-    const bulan = [
-        'Januari','Februari','Maret','April','Mei','Juni',
-        'Juli','Agustus','September','Oktober','November','Desember'
-    ];
-    const tgl = new Date(tanggalStr);
-    return tgl.getDate() + ' ' + bulan[tgl.getMonth()] + ' ' + tgl.getFullYear();
+// BAGIAN 4: HELPER FORMAT WAKTU
+function formatTanggalPengumuman(tanggalStr, createdAt) {
+    const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+    const tgl = new Date(createdAt.replace(' ', 'T'));
+    const hari = namaHari[tgl.getDay()];
+    const dd = String(tgl.getDate()).padStart(2,'0');
+    const mm = String(tgl.getMonth()+1).padStart(2,'0');
+    const yy = tgl.getFullYear();
+    const hh = String(tgl.getHours()).padStart(2,'0');
+    const mn = String(tgl.getMinutes()).padStart(2,'0');
+    return hari + ', ' + dd + '/' + mm + '/' + yy + ' ' + hh + '.' + mn + ' WIB';
 }
 
 function formatDatetime(datetimeStr) {
-    const dt = new Date(datetimeStr);
-    const tgl = dt.getDate().toString().padStart(2, '0');
-    const bln = (dt.getMonth() + 1).toString().padStart(2, '0');
-    const thn = dt.getFullYear();
-    const jam = dt.getHours().toString().padStart(2, '0');
-    const mnt = dt.getMinutes().toString().padStart(2, '0');
-    return tgl + '/' + bln + '/' + thn + ' ' + jam + '.' + mnt;
+    const dt  = new Date(datetimeStr.replace(' ','T'));
+    const dd  = String(dt.getDate()).padStart(2,'0');
+    const mm  = String(dt.getMonth()+1).padStart(2,'0');
+    const yy  = dt.getFullYear();
+    const hh  = String(dt.getHours()).padStart(2,'0');
+    const mn  = String(dt.getMinutes()).padStart(2,'0');
+    return dd+'/'+mm+'/'+yy+' '+hh+'.'+mn;
 }
 
 // BAGIAN 5: PENGUMUMAN
@@ -157,33 +147,44 @@ function loadPengumuman() {
         if (data.status !== 'success') return;
 
         const list    = document.getElementById('historyPengumuman');
-        const preview = document.getElementById('previewPengumuman'); // di beranda
+        const preview = document.getElementById('previewPengumuman');
 
-        if (list) list.innerHTML = '';
+        if (list)    list.innerHTML    = '';
         if (preview) preview.innerHTML = '';
 
         const elStat = document.getElementById('statPengumuman');
         if (elStat) elStat.innerText = data.data.length;
 
-        data.data.forEach(function(item) {
-            const tgl  = new Date(item.tanggal);
-            const hari = tgl.getDate();
+        if (data.data.length === 0) {
+            if (list) list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Belum ada pengumuman.</p>';
+            return;
+        }
 
+        data.data.forEach(function(item) {
+            const waktu = formatTanggalPengumuman(item.tanggal, item.created_at);
+
+            // ── History list (format baru seperti tampilan user) ──
             if (list) {
                 const div = document.createElement('div');
-                div.classList.add('db-history-item');
+                div.classList.add('db-pengumuman-item');
                 div.dataset.id = item.id;
                 div.innerHTML = `
-                    <div class="db-date-badge">${hari}</div>
-                    <div class="db-news-content">
-                        <h4>${item.judul}</h4>
-                        <p>${item.deskripsi}</p>
-                        <span class="db-tanggal">${formatTanggal(item.tanggal)}</span>
+                    <span class="db-pengumuman-waktu">${waktu}</span>
+                    <p class="db-pengumuman-judul">${item.judul}</p>
+                    <p class="db-pengumuman-deskripsi">${item.deskripsi}</p>
+                    <div class="db-pengumuman-actions">
+                        <button class="db-btn-edit" title="Edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="db-btn-hapus" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
-                    <button class="db-btn-hapus" title="Hapus">
-                        <i class="fas fa-trash"></i>
-                    </button>
                 `;
+
+                div.querySelector('.db-btn-edit').addEventListener('click', function() {
+                    bukaModalEdit(item);
+                });
 
                 div.querySelector('.db-btn-hapus').addEventListener('click', function() {
                     hapusPengumuman(item.id, div);
@@ -192,22 +193,18 @@ function loadPengumuman() {
                 list.appendChild(div);
             }
 
+            // ── Preview di beranda (format baru) ──
             if (preview) {
                 const div = document.createElement('div');
-                div.classList.add('db-news-item');
+                div.classList.add('db-preview-pengumuman');
                 div.innerHTML = `
-                    <div class="db-date-badge">${hari}</div>
-                    <div class="db-news-content">
-                        <h4>${item.judul}</h4>
-                        <p>${item.deskripsi}</p>
-                    </div>
+                    <span class="db-preview-waktu">${waktu}</span>
+                    <p class="db-preview-judul">${item.judul}</p>
+                    <p class="db-preview-deskripsi">${item.deskripsi}</p>
                 `;
                 preview.appendChild(div);
             }
         });
-    })
-    .catch(function() {
-        console.warn('Gagal memuat data pengumuman');
     });
 }
 
@@ -230,10 +227,63 @@ function hapusPengumuman(id, elDiv) {
     });
 }
 
+// ── Modal Edit Pengumuman ──
+function bukaModalEdit(item) {
+    document.getElementById('editId').value       = item.id;
+    document.getElementById('editTanggal').value  = item.tanggal;
+    document.getElementById('editJudul').value    = item.judul;
+    document.getElementById('editDeskripsi').value = item.deskripsi;
+    document.getElementById('modalEditPengumuman').style.display = 'flex';
+}
+
+const btnTutupEdit = document.getElementById('btnTutupEdit');
+if (btnTutupEdit) {
+    btnTutupEdit.addEventListener('click', function() {
+        document.getElementById('modalEditPengumuman').style.display = 'none';
+    });
+}
+
+const btnSimpanEdit = document.getElementById('btnSimpanEdit');
+if (btnSimpanEdit) {
+    btnSimpanEdit.addEventListener('click', function() {
+        const id       = document.getElementById('editId').value;
+        const tanggal  = document.getElementById('editTanggal').value;
+        const judul    = document.getElementById('editJudul').value.trim();
+        const deskripsi = document.getElementById('editDeskripsi').value.trim();
+
+        if (!tanggal || !judul || !deskripsi) {
+            alert('Semua kolom harus diisi!');
+            return;
+        }
+
+        btnSimpanEdit.disabled  = true;
+        btnSimpanEdit.innerText = 'Menyimpan...';
+
+        fetch('../api/pengumuman.php', {
+            method  : 'PUT',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ id, tanggal, judul, deskripsi })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'success') {
+                document.getElementById('modalEditPengumuman').style.display = 'none';
+                loadPengumuman();
+            } else {
+                alert('Gagal: ' + data.message);
+            }
+        })
+        .finally(function() {
+            btnSimpanEdit.disabled  = false;
+            btnSimpanEdit.innerHTML = '<i class="fas fa-save"></i> Simpan';
+        });
+    });
+}
+
+// ── Form Tambah Pengumuman ──
 const btnUmumkan = document.getElementById('btnUmumkan');
 if (btnUmumkan) {
     btnUmumkan.addEventListener('click', function() {
-
         const tanggal   = document.getElementById('inputTanggal').value;
         const judul     = document.getElementById('inputJudul').value.trim();
         const deskripsi = document.getElementById('inputDeskripsi').value.trim();
@@ -243,8 +293,8 @@ if (btnUmumkan) {
             return;
         }
 
-        btnUmumkan.disabled   = true;
-        btnUmumkan.innerText  = 'Menyimpan...';
+        btnUmumkan.disabled  = true;
+        btnUmumkan.innerText = 'Menyimpan...';
 
         fetch('../api/pengumuman.php', {
             method  : 'POST',
@@ -271,6 +321,8 @@ if (btnUmumkan) {
 }
 
 // BAGIAN 6: KRITIK & SARAN
+let filterKritikAktif = 'semua';
+
 function loadKritikSaran() {
     fetch('../api/kritik.php')
     .then(function(res) { return res.json(); })
@@ -280,31 +332,35 @@ function loadKritikSaran() {
         const list    = document.getElementById('historyKritik');
         const preview = document.getElementById('previewKritik');
 
-        if (list) list.innerHTML = '';
+        if (list)    list.innerHTML    = '';
         if (preview) preview.innerHTML = '';
 
         const elStat = document.getElementById('statKritik');
         if (elStat) elStat.innerText = data.data.length;
 
-        data.data.forEach(function(item) {
+        // Filter data
+        let tampilkan = data.data;
+        if (filterKritikAktif !== 'semua') {
+            tampilkan = data.data.filter(function(i) {
+                return i.jenis === filterKritikAktif;
+            });
+        }
 
+        if (tampilkan.length === 0) {
+            if (list) list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Tidak ada data.</p>';
+        }
+
+        tampilkan.forEach(function(item) {
             let fotoHTML = '';
             if (item.foto && item.foto.length > 0) {
                 item.foto.forEach(function(namaFile) {
-                    fotoHTML += `
-                        <img 
-                            src="../uploads/kritik_saran/${namaFile}" 
-                            class="db-foto-thumb"
-                            onclick="bukaModalFoto(this.src)"
-                            alt="Foto"
-                        >
-                    `;
+                    fotoHTML += `<img src="../uploads/kritik_saran/${namaFile}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
                 });
             }
 
-            const badgeClass = item.status === 'selesai' ? 'db-badge-selesai' : 'db-badge-pending';
-            const badgeTeks  = item.status === 'selesai' ? 'Selesai' : 'Pending';
-            const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
+            const badgeJenis = item.jenis === 'Kritik'
+                ? '<span class="db-badge" style="background:#fdecea;color:#c0392b;">Kritik</span>'
+                : '<span class="db-badge" style="background:#eaf4fb;color:#2980b9;">Saran</span>';
 
             if (list) {
                 const div = document.createElement('div');
@@ -312,26 +368,24 @@ function loadKritikSaran() {
                 div.dataset.id = item.id;
                 div.innerHTML = `
                     <div class="db-laporan-body">
+                        ${badgeJenis}
                         <p class="db-laporan-teks">${item.deskripsi}</p>
                         <div class="db-foto-list">${fotoHTML}</div>
                         <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
                     </div>
                     <div class="db-laporan-actions">
-                        <span class="db-badge ${badgeClass}">${badgeTeks}</span>
-                        <button class="db-btn-selesai" ${btnDisabled}>
-                            <i class="fas fa-check"></i> 
-                            ${item.status === 'selesai' ? 'Selesai' : 'Tandai Selesai'}
+                        <button class="db-btn-wa" title="Chat WhatsApp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
                         </button>
-                        <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+                        <button class="db-btn-hapus" title="Hapus">
+                            <i class="fas fa-trash"></i>
+                        </button>
                     </div>
                 `;
 
-                const btnSelesai = div.querySelector('.db-btn-selesai');
-                if (!btnSelesai.disabled) {
-                    btnSelesai.addEventListener('click', function() {
-                        updateStatusKritik(item.id, div);
-                    });
-                }
+                div.querySelector('.db-btn-wa').addEventListener('click', function() {
+                    bukaModalWA();
+                });
 
                 div.querySelector('.db-btn-hapus').addEventListener('click', function() {
                     hapusKritik(item.id, div);
@@ -340,10 +394,12 @@ function loadKritikSaran() {
                 list.appendChild(div);
             }
 
+            // Preview beranda
             if (preview) {
                 const div = document.createElement('div');
                 div.classList.add('db-laporan-item');
                 div.innerHTML = `
+                    ${badgeJenis}
                     <p class="db-laporan-teks">${item.deskripsi}</p>
                     <div class="db-foto-list">${fotoHTML}</div>
                     <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
@@ -351,27 +407,20 @@ function loadKritikSaran() {
                 preview.appendChild(div);
             }
         });
-    })
-    .catch(function() {
-        console.warn('Gagal memuat data kritik saran');
     });
 }
 
-function updateStatusKritik(id, elDiv) {
-    fetch('../api/kritik.php', {
-        method  : 'PATCH',
-        headers : { 'Content-Type': 'application/json' },
-        body    : JSON.stringify({ id: id, status: 'selesai' })
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-        if (data.status === 'success') {
-            loadKritikSaran();
-        } else {
-            alert('Gagal update status: ' + data.message);
-        }
+// Filter buttons
+document.querySelectorAll('.db-filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.db-filter-btn').forEach(function(b) {
+            b.classList.remove('active');
+        });
+        this.classList.add('active');
+        filterKritikAktif = this.dataset.filter;
+        loadKritikSaran();
     });
-}
+});
 
 function hapusKritik(id, elDiv) {
     if (!confirm('Hapus laporan ini?')) return;
@@ -392,6 +441,43 @@ function hapusKritik(id, elDiv) {
     });
 }
 
+// ── Modal WhatsApp ──
+function bukaModalWA() {
+    document.getElementById('inputNomorWA').value = '';
+    document.getElementById('modalWA').style.display = 'flex';
+    document.getElementById('inputNomorWA').focus();
+}
+
+const btnTutupWA = document.getElementById('btnTutupWA');
+if (btnTutupWA) {
+    btnTutupWA.addEventListener('click', function() {
+        document.getElementById('modalWA').style.display = 'none';
+    });
+}
+
+const btnChatSekarang = document.getElementById('btnChatSekarang');
+if (btnChatSekarang) {
+    btnChatSekarang.addEventListener('click', function() {
+        let nomor = document.getElementById('inputNomorWA').value.trim();
+
+        if (!nomor) {
+            alert('Nomor WhatsApp harus diisi!');
+            return;
+        }
+
+        // Normalisasi nomor: 08xxx → 628xxx
+        if (nomor.startsWith('0')) {
+            nomor = '62' + nomor.slice(1);
+        }
+
+        // Buka WhatsApp
+        const urlWA = 'https://wa.me/' + nomor;
+        window.open(urlWA, '_blank');
+
+        document.getElementById('modalWA').style.display = 'none';
+    });
+}
+
 // BAGIAN 7: LAPORAN PRASARANA
 function loadLaporanPrasarana() {
     fetch('../api/laporan.php')
@@ -402,25 +488,22 @@ function loadLaporanPrasarana() {
         const list    = document.getElementById('historyLaporan');
         const preview = document.getElementById('previewLaporan');
 
-        if (list) list.innerHTML = '';
+        if (list)    list.innerHTML    = '';
         if (preview) preview.innerHTML = '';
 
         const elStat = document.getElementById('statLaporan');
         if (elStat) elStat.innerText = data.data.length;
 
-        data.data.forEach(function(item) {
+        if (data.data.length === 0) {
+            if (list) list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Belum ada laporan.</p>';
+            return;
+        }
 
+        data.data.forEach(function(item) {
             let fotoHTML = '';
             if (item.foto && item.foto.length > 0) {
                 item.foto.forEach(function(namaFile) {
-                    fotoHTML += `
-                        <img 
-                            src="../uploads/laporan_prasarana/${namaFile}" 
-                            class="db-foto-thumb"
-                            onclick="bukaModalFoto(this.src)"
-                            alt="Foto"
-                        >
-                    `;
+                    fotoHTML += `<img src="../uploads/laporan_prasarana/${namaFile}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
                 });
             }
 
@@ -473,9 +556,6 @@ function loadLaporanPrasarana() {
                 preview.appendChild(div);
             }
         });
-    })
-    .catch(function() {
-        console.warn('Gagal memuat data laporan prasarana');
     });
 }
 
@@ -527,16 +607,14 @@ function bukaModalFoto(src) {
 const modalFotoDB = document.getElementById('modalFotoDB');
 if (modalFotoDB) {
     modalFotoDB.addEventListener('click', function(e) {
-        if (e.target === modalFotoDB) {
-            modalFotoDB.style.display = 'none';
-        }
+        if (e.target === modalFotoDB) modalFotoDB.style.display = 'none';
     });
-
     document.getElementById('modalFotoCloseDB').addEventListener('click', function() {
         modalFotoDB.style.display = 'none';
     });
 }
-// BAGIAN 9: LOAD SEMUA DATA SAAT DASHBOARD DIBUKA
+
+// BAGIAN 9: LOAD SEMUA DATA
 if (document.getElementById('db-Beranda')) {
     loadPengumuman();
     loadKritikSaran();

@@ -32,25 +32,42 @@ if ($method === 'GET') {
     kirimResponse('success', 'Data kritik saran berhasil diambil', $data);
 }
 
+// ── POST: Tambah kritik saran baru ──
+// ── POST: Tambah kritik saran baru (dari siswa) ──
 elseif ($method === 'POST') {
 
     $deskripsi = isset($_POST['deskripsi']) ? trim($_POST['deskripsi']) : '';
+    $jenis     = isset($_POST['jenis'])     ? trim($_POST['jenis'])     : '';
+
+    // DEBUG sementara - hapus setelah masalah solved
+    error_log('DEBUG jenis: ' . $jenis);
+    error_log('DEBUG deskripsi: ' . $deskripsi);
 
     if (empty($deskripsi)) {
         kirimResponse('error', 'Deskripsi tidak boleh kosong');
     }
 
-    $stmt = $conn->prepare("INSERT INTO kritik_saran (deskripsi) VALUES (?)");
-    $stmt->bind_param('s', $deskripsi);
+    // Validasi jenis - pakai strtolower agar tidak case-sensitive
+    $jenisValid = ['kritik', 'saran'];
+    if (!in_array(strtolower($jenis), $jenisValid)) {
+        kirimResponse('error', 'Jenis laporan tidak valid. Diterima: ' . $jenis);
+    }
+
+    // Kapitalisasi sesuai ENUM di DB
+    $jenis = ucfirst(strtolower($jenis));
+
+    $stmt = $conn->prepare("INSERT INTO kritik_saran (jenis, deskripsi) VALUES (?, ?)");
+    $stmt->bind_param('ss', $jenis, $deskripsi);
 
     if (!$stmt->execute()) {
         $stmt->close();
-        kirimResponse('error', 'Gagal menyimpan data');
+        kirimResponse('error', 'Gagal menyimpan data: ' . $conn->error);
     }
 
     $laporanId = $stmt->insert_id;
     $stmt->close();
 
+    // Proses upload foto (jika ada)
     if (!empty($_FILES['foto'])) {
         $uploadDir = '../uploads/kritik_saran/';
 
@@ -67,8 +84,8 @@ elseif ($method === 'POST') {
             $tipe = mime_content_type($files['tmp_name'][$i]);
             if (!in_array($tipe, ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'])) continue;
 
-            $ekstensi  = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
-            $namaFile  = 'foto_' . time() . '_' . $i . '.' . $ekstensi;
+            $ekstensi   = pathinfo($files['name'][$i], PATHINFO_EXTENSION);
+            $namaFile   = 'foto_' . time() . '_' . $i . '.' . $ekstensi;
             $targetPath = $uploadDir . $namaFile;
 
             if (move_uploaded_file($files['tmp_name'][$i], $targetPath)) {
