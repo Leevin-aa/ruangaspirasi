@@ -229,9 +229,8 @@ function hapusPengumuman(id, elDiv) {
 
 // ── Modal Edit Pengumuman ──
 function bukaModalEdit(item) {
-    document.getElementById('editId').value       = item.id;
-    document.getElementById('editTanggal').value  = item.tanggal;
-    document.getElementById('editJudul').value    = item.judul;
+    document.getElementById('editId').value        = item.id;
+    document.getElementById('editJudul').value     = item.judul;
     document.getElementById('editDeskripsi').value = item.deskripsi;
     document.getElementById('modalEditPengumuman').style.display = 'flex';
 }
@@ -246,18 +245,20 @@ if (btnTutupEdit) {
 const btnSimpanEdit = document.getElementById('btnSimpanEdit');
 if (btnSimpanEdit) {
     btnSimpanEdit.addEventListener('click', function() {
-        const id       = document.getElementById('editId').value;
-        const tanggal  = document.getElementById('editTanggal').value;
-        const judul    = document.getElementById('editJudul').value.trim();
+        const id        = document.getElementById('editId').value;
+        const judul     = document.getElementById('editJudul').value.trim();
         const deskripsi = document.getElementById('editDeskripsi').value.trim();
 
-        if (!tanggal || !judul || !deskripsi) {
-            alert('Semua kolom harus diisi!');
+        if (!judul || !deskripsi) {
+            alert('Judul dan deskripsi harus diisi!');
             return;
         }
 
         btnSimpanEdit.disabled  = true;
         btnSimpanEdit.innerText = 'Menyimpan...';
+
+        // Tanggal tetap pakai yang lama (tidak diubah)
+        const tanggal = new Date().toISOString().split('T')[0];
 
         fetch('../api/pengumuman.php', {
             method  : 'PUT',
@@ -273,6 +274,9 @@ if (btnSimpanEdit) {
                 alert('Gagal: ' + data.message);
             }
         })
+        .catch(function() {
+            alert('Gagal terhubung ke server.');
+        })
         .finally(function() {
             btnSimpanEdit.disabled  = false;
             btnSimpanEdit.innerHTML = '<i class="fas fa-save"></i> Simpan';
@@ -284,17 +288,18 @@ if (btnSimpanEdit) {
 const btnUmumkan = document.getElementById('btnUmumkan');
 if (btnUmumkan) {
     btnUmumkan.addEventListener('click', function() {
-        const tanggal   = document.getElementById('inputTanggal').value;
         const judul     = document.getElementById('inputJudul').value.trim();
         const deskripsi = document.getElementById('inputDeskripsi').value.trim();
 
-        if (!tanggal || !judul || !deskripsi) {
-            alert('Semua kolom harus diisi!');
+        if (!judul || !deskripsi) {
+            alert('Judul dan deskripsi harus diisi!');
             return;
         }
 
         btnUmumkan.disabled  = true;
         btnUmumkan.innerText = 'Menyimpan...';
+
+        const tanggal = new Date().toISOString().split('T')[0];
 
         fetch('../api/pengumuman.php', {
             method  : 'POST',
@@ -305,13 +310,15 @@ if (btnUmumkan) {
         .then(function(data) {
             if (data.status === 'success') {
                 alert('Pengumuman berhasil ditambahkan!');
-                document.getElementById('inputTanggal').value   = '';
                 document.getElementById('inputJudul').value     = '';
                 document.getElementById('inputDeskripsi').value = '';
                 loadPengumuman();
             } else {
                 alert('Gagal: ' + data.message);
             }
+        })
+        .catch(function() {
+            alert('Gagal terhubung ke server.');
         })
         .finally(function() {
             btnUmumkan.disabled  = false;
@@ -321,131 +328,18 @@ if (btnUmumkan) {
 }
 
 // BAGIAN 6: KRITIK & SARAN
-let filterKritikAktif = 'semua';
-
-function loadKritikSaran() {
-    fetch('../api/kritik.php')
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-        if (data.status !== 'success') return;
-
-        const list    = document.getElementById('historyKritik');
-        const preview = document.getElementById('previewKritik');
-
-        if (list)    list.innerHTML    = '';
-        if (preview) preview.innerHTML = '';
-
-        const elStat = document.getElementById('statKritik');
-        if (elStat) elStat.innerText = data.data.length;
-
-        // Filter data
-        let tampilkan = data.data;
-        if (filterKritikAktif !== 'semua') {
-            tampilkan = data.data.filter(function(i) {
-                return i.jenis === filterKritikAktif;
-            });
-        }
-
-        if (tampilkan.length === 0) {
-            if (list) list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Tidak ada data.</p>';
-        }
-
-        tampilkan.forEach(function(item) {
-            let fotoHTML = '';
-            if (item.foto && item.foto.length > 0) {
-                item.foto.forEach(function(namaFile) {
-                    fotoHTML += `<img src="../uploads/kritik_saran/${namaFile}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
-                });
-            }
-
-            const badgeJenis = item.jenis === 'Kritik'
-                ? '<span class="db-badge" style="background:#fdecea;color:#c0392b;">Kritik</span>'
-                : '<span class="db-badge" style="background:#eaf4fb;color:#2980b9;">Saran</span>';
-
-            if (list) {
-                const div = document.createElement('div');
-                div.classList.add('db-history-item', 'db-laporan-card');
-                div.dataset.id = item.id;
-                div.innerHTML = `
-                    <div class="db-laporan-body">
-                        ${badgeJenis}
-                        <p class="db-laporan-teks">${item.deskripsi}</p>
-                        <div class="db-foto-list">${fotoHTML}</div>
-                        <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
-                    </div>
-                    <div class="db-laporan-actions">
-                        <button class="db-btn-wa" title="Chat WhatsApp">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
-                        </button>
-                        <button class="db-btn-hapus" title="Hapus">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
-                `;
-
-                div.querySelector('.db-btn-wa').addEventListener('click', function() {
-                    bukaModalWA();
-                });
-
-                div.querySelector('.db-btn-hapus').addEventListener('click', function() {
-                    hapusKritik(item.id, div);
-                });
-
-                list.appendChild(div);
-            }
-
-            // Preview beranda
-            if (preview) {
-                const div = document.createElement('div');
-                div.classList.add('db-laporan-item');
-                div.innerHTML = `
-                    ${badgeJenis}
-                    <p class="db-laporan-teks">${item.deskripsi}</p>
-                    <div class="db-foto-list">${fotoHTML}</div>
-                    <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
-                `;
-                preview.appendChild(div);
-            }
-        });
-    });
-}
-
-// Filter buttons
-document.querySelectorAll('.db-filter-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-        document.querySelectorAll('.db-filter-btn').forEach(function(b) {
-            b.classList.remove('active');
-        });
-        this.classList.add('active');
-        filterKritikAktif = this.dataset.filter;
-        loadKritikSaran();
-    });
-});
-
-function hapusKritik(id, elDiv) {
-    if (!confirm('Hapus laporan ini?')) return;
-
-    fetch('../api/kritik.php', {
-        method  : 'DELETE',
-        headers : { 'Content-Type': 'application/json' },
-        body    : JSON.stringify({ id: id })
-    })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-        if (data.status === 'success') {
-            elDiv.remove();
-            loadKritikSaran();
-        } else {
-            alert('Gagal menghapus: ' + data.message);
-        }
-    });
-}
+let filterKritikAktif     = 'semua';
+let filterTglDariKritik   = '';
+let filterTglSampaiKritik = '';
+let dataKritikSemua       = [];
 
 // ── Modal WhatsApp ──
 function bukaModalWA() {
     document.getElementById('inputNomorWA').value = '';
     document.getElementById('modalWA').style.display = 'flex';
-    document.getElementById('inputNomorWA').focus();
+    setTimeout(function() {
+        document.getElementById('inputNomorWA').focus();
+    }, 100);
 }
 
 const btnTutupWA = document.getElementById('btnTutupWA');
@@ -465,87 +359,243 @@ if (btnChatSekarang) {
             return;
         }
 
-        // Normalisasi nomor: 08xxx → 628xxx
+        // Normalisasi: 08xxx → 628xxx
         if (nomor.startsWith('0')) {
             nomor = '62' + nomor.slice(1);
         }
 
-        // Buka WhatsApp
-        const urlWA = 'https://wa.me/' + nomor;
-        window.open(urlWA, '_blank');
+        // Hapus karakter selain angka
+        nomor = nomor.replace(/\D/g, '');
 
+        window.open('https://wa.me/' + nomor, '_blank');
         document.getElementById('modalWA').style.display = 'none';
     });
 }
 
+// Tutup modal WA jika klik di luar
+const modalWA = document.getElementById('modalWA');
+if (modalWA) {
+    modalWA.addEventListener('click', function(e) {
+        if (e.target === modalWA) {
+            modalWA.style.display = 'none';
+        }
+    });
+}
+
+function loadKritikSaran() {
+    fetch('../api/kritik.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status !== 'success') return;
+
+        dataKritikSemua = data.data;
+
+        const elStat = document.getElementById('statKritik');
+        if (elStat) elStat.innerText = data.data.length;
+
+        // Isi preview beranda
+        const preview = document.getElementById('previewKritik');
+        if (preview) {
+            preview.innerHTML = '';
+            data.data.slice(0, 3).forEach(function(item) {
+                let fotoHTML = '';
+                if (item.foto && item.foto.length > 0) {
+                    item.foto.forEach(function(f) {
+                        fotoHTML += `<img src="../uploads/kritik_saran/${f}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
+                    });
+                }
+                const badgeJenis = item.jenis === 'Kritik'
+                    ? '<span class="db-badge" style="background:#fdecea;color:#c0392b;">Kritik</span>'
+                    : '<span class="db-badge" style="background:#eaf4fb;color:#2980b9;">Saran</span>';
+                const div = document.createElement('div');
+                div.classList.add('db-laporan-item');
+                div.innerHTML = `
+                    ${badgeJenis}
+                    <p class="db-laporan-teks">${item.deskripsi}</p>
+                    <div class="db-foto-list">${fotoHTML}</div>
+                    <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+                `;
+                preview.appendChild(div);
+            });
+        }
+
+        tampilkanKritik();
+    })
+    .catch(function(err) {
+        console.error('Gagal load kritik:', err);
+    });
+}
+
+function tampilkanKritik() {
+    const list = document.getElementById('historyKritik');
+    if (!list) return;
+
+    list.innerHTML = '';
+
+    // Filter jenis
+    let tampilkan = dataKritikSemua;
+    if (filterKritikAktif !== 'semua') {
+        tampilkan = tampilkan.filter(function(i) {
+            return i.jenis === filterKritikAktif;
+        });
+    }
+
+    // Filter tanggal dari
+    if (filterTglDariKritik) {
+        const dari = new Date(filterTglDariKritik + 'T00:00:00');
+        tampilkan = tampilkan.filter(function(i) {
+            return new Date(i.created_at.replace(' ', 'T')) >= dari;
+        });
+    }
+
+    // Filter tanggal sampai
+    if (filterTglSampaiKritik) {
+        const sampai = new Date(filterTglSampaiKritik + 'T23:59:59');
+        tampilkan = tampilkan.filter(function(i) {
+            return new Date(i.created_at.replace(' ', 'T')) <= sampai;
+        });
+    }
+
+    if (tampilkan.length === 0) {
+        list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;padding:10px 0;">Tidak ada data.</p>';
+        return;
+    }
+
+    tampilkan.forEach(function(item) {
+        let fotoHTML = '';
+        if (item.foto && item.foto.length > 0) {
+            item.foto.forEach(function(namaFile) {
+                fotoHTML += `<img src="../uploads/kritik_saran/${namaFile}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
+            });
+        }
+
+        const badgeJenis = item.jenis === 'Kritik'
+            ? '<span class="db-badge" style="background:#fdecea;color:#c0392b;">Kritik</span>'
+            : '<span class="db-badge" style="background:#eaf4fb;color:#2980b9;">Saran</span>';
+
+        const div = document.createElement('div');
+        div.classList.add('db-history-item', 'db-laporan-card');
+        div.dataset.id = item.id;
+        div.innerHTML = `
+            <div class="db-laporan-body">
+                ${badgeJenis}
+                <p class="db-laporan-teks">${item.deskripsi}</p>
+                <div class="db-foto-list">${fotoHTML}</div>
+                <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+            </div>
+            <div class="db-laporan-actions">
+                <button class="db-btn-wa">
+                    <i class="fab fa-whatsapp"></i> WhatsApp
+                </button>
+                <button class="db-btn-hapus">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+
+        div.querySelector('.db-btn-wa').addEventListener('click', function() {
+            bukaModalWA();
+        });
+
+        div.querySelector('.db-btn-hapus').addEventListener('click', function() {
+            hapusKritik(item.id, div);
+        });
+
+        list.appendChild(div);
+    });
+}
+
+// Filter jenis
+document.querySelectorAll('.db-filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.db-filter-btn').forEach(function(b) {
+            b.classList.remove('active');
+        });
+        this.classList.add('active');
+        filterKritikAktif = this.dataset.filter;
+        tampilkanKritik();
+    });
+});
+
+// Filter tanggal kritik
+const btnFilterKritik = document.getElementById('btnFilterKritik');
+if (btnFilterKritik) {
+    btnFilterKritik.addEventListener('click', function() {
+        filterTglDariKritik   = document.getElementById('filterTanggalDariKritik').value;
+        filterTglSampaiKritik = document.getElementById('filterTanggalSampaiKritik').value;
+
+        if (!filterTglDariKritik && !filterTglSampaiKritik) {
+            alert('Pilih minimal satu tanggal untuk filter!');
+            return;
+        }
+
+        tampilkanKritik();
+    });
+}
+
+const btnResetKritik = document.getElementById('btnResetKritik');
+if (btnResetKritik) {
+    btnResetKritik.addEventListener('click', function() {
+        filterTglDariKritik   = '';
+        filterTglSampaiKritik = '';
+        document.getElementById('filterTanggalDariKritik').value   = '';
+        document.getElementById('filterTanggalSampaiKritik').value = '';
+        tampilkanKritik();
+    });
+}
+
+function hapusKritik(id, elDiv) {
+    if (!confirm('Hapus laporan ini?')) return;
+
+    fetch('../api/kritik.php', {
+        method  : 'DELETE',
+        headers : { 'Content-Type': 'application/json' },
+        body    : JSON.stringify({ id: id })
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            elDiv.remove();
+            // Update data lokal juga
+            dataKritikSemua = dataKritikSemua.filter(function(i) {
+                return i.id !== id;
+            });
+            const elStat = document.getElementById('statKritik');
+            if (elStat) elStat.innerText = dataKritikSemua.length;
+        } else {
+            alert('Gagal menghapus: ' + data.message);
+        }
+    });
+}
+
+
 // BAGIAN 7: LAPORAN PRASARANA
+let filterTglDariLaporan   = '';
+let filterTglSampaiLaporan = '';
+let dataLaporanSemua       = [];
+
 function loadLaporanPrasarana() {
     fetch('../api/laporan.php')
     .then(function(res) { return res.json(); })
     .then(function(data) {
         if (data.status !== 'success') return;
 
-        const list    = document.getElementById('historyLaporan');
-        const preview = document.getElementById('previewLaporan');
-
-        if (list)    list.innerHTML    = '';
-        if (preview) preview.innerHTML = '';
+        dataLaporanSemua = data.data;
 
         const elStat = document.getElementById('statLaporan');
         if (elStat) elStat.innerText = data.data.length;
 
-        if (data.data.length === 0) {
-            if (list) list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Belum ada laporan.</p>';
-            return;
-        }
-
-        data.data.forEach(function(item) {
-            let fotoHTML = '';
-            if (item.foto && item.foto.length > 0) {
-                item.foto.forEach(function(namaFile) {
-                    fotoHTML += `<img src="../uploads/laporan_prasarana/${namaFile}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
-                });
-            }
-
-            const badgeClass  = item.status === 'selesai' ? 'db-badge-selesai' : 'db-badge-pending';
-            const badgeTeks   = item.status === 'selesai' ? 'Selesai' : 'Pending';
-            const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
-
-            if (list) {
-                const div = document.createElement('div');
-                div.classList.add('db-history-item', 'db-laporan-card');
-                div.dataset.id = item.id;
-                div.innerHTML = `
-                    <div class="db-laporan-body">
-                        <p class="db-laporan-teks">${item.deskripsi}</p>
-                        <div class="db-foto-list">${fotoHTML}</div>
-                        <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
-                    </div>
-                    <div class="db-laporan-actions">
-                        <span class="db-badge ${badgeClass}">${badgeTeks}</span>
-                        <button class="db-btn-selesai" ${btnDisabled}>
-                            <i class="fas fa-check"></i>
-                            ${item.status === 'selesai' ? 'Selesai' : 'Tandai Selesai'}
-                        </button>
-                        <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
-                    </div>
-                `;
-
-                const btnSelesai = div.querySelector('.db-btn-selesai');
-                if (!btnSelesai.disabled) {
-                    btnSelesai.addEventListener('click', function() {
-                        updateStatusLaporan(item.id, div);
+        // Isi preview beranda
+        const preview = document.getElementById('previewLaporan');
+        if (preview) {
+            preview.innerHTML = '';
+            data.data.slice(0, 3).forEach(function(item) {
+                let fotoHTML = '';
+                if (item.foto && item.foto.length > 0) {
+                    item.foto.forEach(function(f) {
+                        fotoHTML += `<img src="../uploads/laporan_prasarana/${f}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
                     });
                 }
-
-                div.querySelector('.db-btn-hapus').addEventListener('click', function() {
-                    hapusLaporan(item.id, div);
-                });
-
-                list.appendChild(div);
-            }
-
-            if (preview) {
                 const div = document.createElement('div');
                 div.classList.add('db-laporan-item');
                 div.innerHTML = `
@@ -554,8 +604,113 @@ function loadLaporanPrasarana() {
                     <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
                 `;
                 preview.appendChild(div);
-            }
+            });
+        }
+
+        tampilkanLaporan();
+    })
+    .catch(function(err) {
+        console.error('Gagal load laporan:', err);
+    });
+}
+
+function tampilkanLaporan() {
+    const list = document.getElementById('historyLaporan');
+    if (!list) return;
+
+    list.innerHTML = '';
+
+    let tampilkan = dataLaporanSemua;
+
+    if (filterTglDariLaporan) {
+        const dari = new Date(filterTglDariLaporan + 'T00:00:00');
+        tampilkan = tampilkan.filter(function(i) {
+            return new Date(i.created_at.replace(' ', 'T')) >= dari;
         });
+    }
+
+    if (filterTglSampaiLaporan) {
+        const sampai = new Date(filterTglSampaiLaporan + 'T23:59:59');
+        tampilkan = tampilkan.filter(function(i) {
+            return new Date(i.created_at.replace(' ', 'T')) <= sampai;
+        });
+    }
+
+    if (tampilkan.length === 0) {
+        list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;padding:10px 0;">Tidak ada data.</p>';
+        return;
+    }
+
+    tampilkan.forEach(function(item) {
+        let fotoHTML = '';
+        if (item.foto && item.foto.length > 0) {
+            item.foto.forEach(function(namaFile) {
+                fotoHTML += `<img src="../uploads/laporan_prasarana/${namaFile}" class="db-foto-thumb" onclick="bukaModalFoto(this.src)" alt="Foto">`;
+            });
+        }
+
+        const badgeClass  = item.status === 'selesai' ? 'db-badge-selesai' : 'db-badge-pending';
+        const badgeTeks   = item.status === 'selesai' ? 'Selesai' : 'Pending';
+        const btnDisabled = item.status === 'selesai' ? 'disabled' : '';
+
+        const div = document.createElement('div');
+        div.classList.add('db-history-item', 'db-laporan-card');
+        div.dataset.id = item.id;
+        div.innerHTML = `
+            <div class="db-laporan-body">
+                <p class="db-laporan-teks">${item.deskripsi}</p>
+                <div class="db-foto-list">${fotoHTML}</div>
+                <span class="db-tanggal">${formatDatetime(item.created_at)}</span>
+            </div>
+            <div class="db-laporan-actions">
+                <span class="db-badge ${badgeClass}">${badgeTeks}</span>
+                <button class="db-btn-selesai" ${btnDisabled}>
+                    <i class="fas fa-check"></i>
+                    ${item.status === 'selesai' ? 'Selesai' : 'Tandai Selesai'}
+                </button>
+                <button class="db-btn-hapus"><i class="fas fa-trash"></i></button>
+            </div>
+        `;
+
+        const btnSelesai = div.querySelector('.db-btn-selesai');
+        if (!btnSelesai.disabled) {
+            btnSelesai.addEventListener('click', function() {
+                updateStatusLaporan(item.id, div);
+            });
+        }
+
+        div.querySelector('.db-btn-hapus').addEventListener('click', function() {
+            hapusLaporan(item.id, div);
+        });
+
+        list.appendChild(div);
+    });
+}
+
+// Filter tanggal laporan
+const btnFilterLaporan = document.getElementById('btnFilterLaporan');
+if (btnFilterLaporan) {
+    btnFilterLaporan.addEventListener('click', function() {
+        filterTglDariLaporan   = document.getElementById('filterTanggalDariLaporan').value;
+        filterTglSampaiLaporan = document.getElementById('filterTanggalSampaiLaporan').value;
+
+        if (!filterTglDariLaporan && !filterTglSampaiLaporan) {
+            alert('Pilih minimal satu tanggal untuk filter!');
+            return;
+        }
+
+        tampilkanLaporan();
+    });
+}
+
+const btnResetLaporan = document.getElementById('btnResetLaporan');
+if (btnResetLaporan) {
+    btnResetLaporan.addEventListener('click', function() {
+        filterTglDariLaporan   = '';
+        filterTglSampaiLaporan = '';
+        document.getElementById('filterTanggalDariLaporan').value   = '';
+        document.getElementById('filterTanggalSampaiLaporan').value = '';
+        tampilkanLaporan();
     });
 }
 
@@ -568,7 +723,12 @@ function updateStatusLaporan(id, elDiv) {
     .then(function(res) { return res.json(); })
     .then(function(data) {
         if (data.status === 'success') {
-            loadLaporanPrasarana();
+            // Update data lokal
+            dataLaporanSemua = dataLaporanSemua.map(function(i) {
+                if (i.id === id) i.status = 'selesai';
+                return i;
+            });
+            tampilkanLaporan();
         } else {
             alert('Gagal update status: ' + data.message);
         }
@@ -586,8 +746,12 @@ function hapusLaporan(id, elDiv) {
     .then(function(res) { return res.json(); })
     .then(function(data) {
         if (data.status === 'success') {
-            elDiv.remove();
-            loadLaporanPrasarana();
+            dataLaporanSemua = dataLaporanSemua.filter(function(i) {
+                return i.id !== id;
+            });
+            const elStat = document.getElementById('statLaporan');
+            if (elStat) elStat.innerText = dataLaporanSemua.length;
+            tampilkanLaporan();
         } else {
             alert('Gagal menghapus: ' + data.message);
         }

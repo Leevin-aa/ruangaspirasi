@@ -1,15 +1,23 @@
 <?php
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, DELETE');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
+header('Access-Control-Allow-Headers: Content-Type');
 
 require_once 'config.php';
 
+// Handle preflight OPTIONS request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
+// ── GET: Ambil semua pengumuman ──
 if ($method === 'GET') {
 
-    $result = $conn->query("SELECT * FROM pengumuman ORDER BY tanggal DESC");
+    $result = $conn->query("SELECT * FROM pengumuman ORDER BY created_at DESC");
     $data   = [];
 
     while ($row = $result->fetch_assoc()) {
@@ -19,17 +27,23 @@ if ($method === 'GET') {
     kirimResponse('success', 'Data pengumuman berhasil diambil', $data);
 }
 
+// ── POST: Tambah pengumuman baru ──
 elseif ($method === 'POST') {
 
     cekLogin();
 
-    $input    = json_decode(file_get_contents('php://input'), true);
-    $tanggal  = isset($input['tanggal'])  ? trim($input['tanggal'])  : '';
-    $judul    = isset($input['judul'])    ? trim($input['judul'])    : '';
+    $input     = json_decode(file_get_contents('php://input'), true);
+    $tanggal   = isset($input['tanggal'])   ? trim($input['tanggal'])   : '';
+    $judul     = isset($input['judul'])     ? trim($input['judul'])     : '';
     $deskripsi = isset($input['deskripsi']) ? trim($input['deskripsi']) : '';
 
-    if (empty($tanggal) || empty($judul) || empty($deskripsi)) {
-        kirimResponse('error', 'Semua kolom harus diisi');
+    if (empty($judul) || empty($deskripsi)) {
+        kirimResponse('error', 'Judul dan deskripsi harus diisi');
+    }
+
+    // Jika tanggal kosong, pakai tanggal hari ini
+    if (empty($tanggal)) {
+        $tanggal = date('Y-m-d');
     }
 
     $stmt = $conn->prepare("INSERT INTO pengumuman (tanggal, judul, deskripsi) VALUES (?, ?, ?)");
@@ -45,6 +59,38 @@ elseif ($method === 'POST') {
     }
 }
 
+// ── PUT: Edit pengumuman ──
+elseif ($method === 'PUT') {
+
+    cekLogin();
+
+    $input     = json_decode(file_get_contents('php://input'), true);
+    $id        = isset($input['id'])        ? (int)$input['id']          : 0;
+    $tanggal   = isset($input['tanggal'])   ? trim($input['tanggal'])    : '';
+    $judul     = isset($input['judul'])     ? trim($input['judul'])      : '';
+    $deskripsi = isset($input['deskripsi']) ? trim($input['deskripsi'])  : '';
+
+    if ($id <= 0 || empty($judul) || empty($deskripsi)) {
+        kirimResponse('error', 'Data tidak valid');
+    }
+
+    if (empty($tanggal)) {
+        $tanggal = date('Y-m-d');
+    }
+
+    $stmt = $conn->prepare("UPDATE pengumuman SET tanggal=?, judul=?, deskripsi=? WHERE id=?");
+    $stmt->bind_param('sssi', $tanggal, $judul, $deskripsi, $id);
+
+    if ($stmt->execute()) {
+        $stmt->close();
+        kirimResponse('success', 'Pengumuman berhasil diupdate');
+    } else {
+        $stmt->close();
+        kirimResponse('error', 'Gagal mengupdate: ' . $conn->error);
+    }
+}
+
+// ── DELETE: Hapus pengumuman ──
 elseif ($method === 'DELETE') {
 
     cekLogin();

@@ -1025,3 +1025,70 @@ body {
     color: #666;
     line-height: 1.4;
 }
+
+/* ================================================ */
+/* FILTER TANGGAL                                  */
+/* ================================================ */
+
+.db-filter-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.db-filter-tanggal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.db-filter-tanggal label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #2c3e50;
+    white-space: nowrap;
+}
+
+.db-input-kecil {
+    width: auto !important;
+    padding: 8px 12px !important;
+    font-size: 0.85rem !important;
+}
+
+.db-btn-filter-tgl {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.db-btn-filter-tgl:hover {
+    background: #1a252f;
+}
+
+.db-btn-reset-tgl {
+    background: none;
+    color: #e74c3c;
+    border: 1px solid #e74c3c;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: 0.2s;
+}
+
+.db-btn-reset-tgl:hover {
+    background: #fdecea;
+}

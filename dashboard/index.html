@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Ruang Aspirasi Esemkasa</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styledash.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -136,10 +136,6 @@
                 <div class="db-form-card" id="formTambahPengumuman">
                     <h3 class="db-form-title"><i class="fas fa-plus-circle"></i> Tambah Pengumuman Baru</h3>
                     <div class="db-form-group">
-                        <label class="db-form-label">Tanggal Pengumuman</label>
-                        <input type="date" class="db-form-input" id="inputTanggal">
-                    </div>
-                    <div class="db-form-group">
                         <label class="db-form-label">Judul Pengumuman</label>
                         <input type="text" class="db-form-input" id="inputJudul" placeholder="Masukkan judul pengumuman...">
                     </div>
@@ -170,18 +166,31 @@
             <!-- ======================================== -->
             <div class="db-page" id="db-KritikSaran" style="display:none;">
 
-                <h2 class="db-page-title"><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
+    <h2 class="db-page-title"><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
 
-                <!-- Filter -->
-                <div class="db-filter-bar">
-                    <button class="db-filter-btn active" data-filter="semua">Semua</button>
-                    <button class="db-filter-btn" data-filter="Kritik">Kritik</button>
-                    <button class="db-filter-btn" data-filter="Saran">Saran</button>
-                </div>
+    <!-- Filter Jenis + Tanggal -->
+    <div class="db-filter-wrapper">
+        <div class="db-filter-bar">
+            <button class="db-filter-btn active" data-filter="semua">Semua</button>
+            <button class="db-filter-btn" data-filter="Kritik">Kritik</button>
+            <button class="db-filter-btn" data-filter="Saran">Saran</button>
+        </div>
+        <div class="db-filter-tanggal">
+            <label>Dari:</label>
+            <input type="date" id="filterTanggalDariKritik" class="db-form-input db-input-kecil">
+            <label>Sampai:</label>
+            <input type="date" id="filterTanggalSampaiKritik" class="db-form-input db-input-kecil">
+            <button class="db-btn-filter-tgl" id="btnFilterKritik">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <button class="db-btn-reset-tgl" id="btnResetKritik">
+                <i class="fas fa-times"></i> Reset
+            </button>
+        </div>
+    </div>
 
-                <div class="db-history-list" id="historyKritik"></div>
-
-            </div>
+    <div class="db-history-list" id="historyKritik"></div>
+</div>
 
 
             <!-- ======================================== -->
@@ -189,10 +198,26 @@
             <!-- ======================================== -->
             <div class="db-page" id="db-LaporPrasarana" style="display:none;">
 
-                <h2 class="db-page-title"><i class="fas fa-tools"></i> Laporan Prasarana</h2>
-                <div class="db-history-list" id="historyLaporan"></div>
+    <h2 class="db-page-title"><i class="fas fa-tools"></i> Laporan Prasarana</h2>
 
-            </div>
+    <!-- Filter Tanggal -->
+    <div class="db-filter-wrapper">
+        <div class="db-filter-tanggal">
+            <label>Dari:</label>
+            <input type="date" id="filterTanggalDariLaporan" class="db-form-input db-input-kecil">
+            <label>Sampai:</label>
+            <input type="date" id="filterTanggalSampaiLaporan" class="db-form-input db-input-kecil">
+            <button class="db-btn-filter-tgl" id="btnFilterLaporan">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <button class="db-btn-reset-tgl" id="btnResetLaporan">
+                <i class="fas fa-times"></i> Reset
+            </button>
+        </div>
+    </div>
+
+    <div class="db-history-list" id="historyLaporan"></div>
+</div>
 
         </main>
 
@@ -204,10 +229,6 @@
                     <button class="db-modal-close" id="btnTutupEdit"><i class="fas fa-times"></i></button>
                 </div>
                 <input type="hidden" id="editId">
-                <div class="db-form-group">
-                    <label class="db-form-label">Tanggal</label>
-                    <input type="date" class="db-form-input" id="editTanggal">
-                </div>
                 <div class="db-form-group">
                     <label class="db-form-label">Judul</label>
                     <input type="text" class="db-form-input" id="editJudul">
@@ -275,6 +296,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="scriptdash.js"></script>
 </body>
 </html>
