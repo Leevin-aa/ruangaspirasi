@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="styledash.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+
 <body>
 
     <div class="db-container">
@@ -35,6 +37,9 @@
                 </a>
                 <a href="#" class="db-nav-link" data-target="db-LaporPrasarana">
                     <i class="fas fa-tools"></i> Laporan Prasarana
+                </a>
+                <a href="#" class="db-nav-link" data-target="db-pengaturan">
+                    <i class="fas fa-gear"></i> Pengaturan
                 </a>
             </nav>
 
@@ -137,11 +142,13 @@
                     <h3 class="db-form-title"><i class="fas fa-plus-circle"></i> Tambah Pengumuman Baru</h3>
                     <div class="db-form-group">
                         <label class="db-form-label">Judul Pengumuman</label>
-                        <input type="text" class="db-form-input" id="inputJudul" placeholder="Masukkan judul pengumuman...">
+                        <input type="text" class="db-form-input" id="inputJudul"
+                            placeholder="Masukkan judul pengumuman...">
                     </div>
                     <div class="db-form-group">
                         <label class="db-form-label">Deskripsi Pengumuman</label>
-                        <textarea class="db-form-input db-form-textarea" id="inputDeskripsi" placeholder="Masukkan deskripsi pengumuman..."></textarea>
+                        <textarea class="db-form-input db-form-textarea" id="inputDeskripsi"
+                            placeholder="Masukkan deskripsi pengumuman..."></textarea>
                     </div>
                     <div class="db-form-footer">
                         <button class="db-btn-submit" id="btnUmumkan">
@@ -166,31 +173,34 @@
             <!-- ======================================== -->
             <div class="db-page" id="db-KritikSaran" style="display:none;">
 
-    <h2 class="db-page-title"><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
+                <h2 class="db-page-title"><i class="fas fa-comment-dots"></i> Kritik dan Saran</h2>
 
-    <!-- Filter Jenis + Tanggal -->
-    <div class="db-filter-wrapper">
-        <div class="db-filter-bar">
-            <button class="db-filter-btn active" data-filter="semua">Semua</button>
-            <button class="db-filter-btn" data-filter="Kritik">Kritik</button>
-            <button class="db-filter-btn" data-filter="Saran">Saran</button>
-        </div>
-        <div class="db-filter-tanggal">
-            <label>Dari:</label>
-            <input type="date" id="filterTanggalDariKritik" class="db-form-input db-input-kecil">
-            <label>Sampai:</label>
-            <input type="date" id="filterTanggalSampaiKritik" class="db-form-input db-input-kecil">
-            <button class="db-btn-filter-tgl" id="btnFilterKritik">
-                <i class="fas fa-filter"></i> Filter
-            </button>
-            <button class="db-btn-reset-tgl" id="btnResetKritik">
-                <i class="fas fa-times"></i> Reset
-            </button>
-        </div>
-    </div>
+                <!-- Filter Jenis + Tanggal -->
+                <div class="db-filter-wrapper">
+                    <div class="db-filter-bar">
+                        <button class="db-filter-btn active" data-filter="semua">Semua</button>
+                        <button class="db-filter-btn" data-filter="Kritik">Kritik</button>
+                        <button class="db-filter-btn" data-filter="Saran">Saran</button>
+                    </div>
+                    <div class="db-filter-tanggal">
+                        <label>Dari:</label>
+                        <input type="date" id="filterTanggalDariKritik" class="db-form-input db-input-kecil">
+                        <label>Sampai:</label>
+                        <input type="date" id="filterTanggalSampaiKritik" class="db-form-input db-input-kecil">
+                        <button class="db-btn-filter-tgl" id="btnFilterKritik">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <button class="db-btn-reset-tgl" id="btnResetKritik">
+                            <i class="fas fa-times"></i> Reset
+                        </button>
+                        <button class="db-btn-print" id="btnPrintKritik">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
+                </div>
 
-    <div class="db-history-list" id="historyKritik"></div>
-</div>
+                <div class="db-history-list" id="historyKritik"></div>
+            </div>
 
 
             <!-- ======================================== -->
@@ -198,27 +208,103 @@
             <!-- ======================================== -->
             <div class="db-page" id="db-LaporPrasarana" style="display:none;">
 
-    <h2 class="db-page-title"><i class="fas fa-tools"></i> Laporan Prasarana</h2>
+                <h2 class="db-page-title"><i class="fas fa-tools"></i> Laporan Prasarana</h2>
 
-    <!-- Filter Tanggal -->
-    <div class="db-filter-wrapper">
-        <div class="db-filter-tanggal">
-            <label>Dari:</label>
-            <input type="date" id="filterTanggalDariLaporan" class="db-form-input db-input-kecil">
-            <label>Sampai:</label>
-            <input type="date" id="filterTanggalSampaiLaporan" class="db-form-input db-input-kecil">
-            <button class="db-btn-filter-tgl" id="btnFilterLaporan">
-                <i class="fas fa-filter"></i> Filter
-            </button>
-            <button class="db-btn-reset-tgl" id="btnResetLaporan">
-                <i class="fas fa-times"></i> Reset
-            </button>
-        </div>
-    </div>
+                <!-- Filter Tanggal -->
+                <div class="db-filter-wrapper">
+                    <div class="db-filter-tanggal">
+                        <label>Dari:</label>
+                        <input type="date" id="filterTanggalDariLaporan" class="db-form-input db-input-kecil">
+                        <label>Sampai:</label>
+                        <input type="date" id="filterTanggalSampaiLaporan" class="db-form-input db-input-kecil">
+                        <button class="db-btn-filter-tgl" id="btnFilterLaporan">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <button class="db-btn-reset-tgl" id="btnResetLaporan">
+                            <i class="fas fa-times"></i> Reset
+                        </button>
+                        <button class="db-btn-print" id="btnPrintLaporan">
+                            <i class="fas fa-print"></i> Print
+                        </button>
+                    </div>
+                </div>
 
-    <div class="db-history-list" id="historyLaporan"></div>
-</div>
+                <div class="db-history-list" id="historyLaporan"></div>
+            </div>
+            <!-- ======================================== -->
+            <!-- HALAMAN 5: PENGATURAN                   -->
+            <!-- ======================================== -->
+            <div class="db-page" id="db-pengaturan" style="display:none;">
 
+                <h2 class="db-page-title"><i class="fas fa-gear"></i> Pengaturan</h2>
+
+                <!-- Kelola Kata Blacklist -->
+                <div class="db-form-card">
+                    <h3 class="db-form-title">
+                        <i class="fas fa-ban"></i> Kelola Kata Blacklist
+                    </h3>
+                    <p style="font-size:0.85rem;color:#7f8c8d;margin-bottom:20px;">
+                        Kata yang ditambahkan akan otomatis memblokir laporan yang mengandung kata tersebut atau
+                        variasinya.
+                    </p>
+
+                    <!-- Input tambah kata -->
+                    <div class="db-blacklist-input-wrapper">
+                        <input type="text" class="db-form-input" id="inputKataBlacklist"
+                            placeholder="Tambah kata baru..." style="flex:1;">
+                        <button class="db-btn-submit" id="btnTambahBlacklist">
+                            <i class="fas fa-plus"></i> Tambah
+                        </button>
+                    </div>
+
+                    <!-- Daftar kata blacklist -->
+                    <div class="db-blacklist-tags" id="daftarBlacklist">
+                        <!-- Diisi otomatis oleh JS -->
+                    </div>
+
+                </div>
+
+                <!-- Kelola Gambar Popup -->
+                <div class="db-form-card" style="margin-top: 25px;">
+                    <h3 class="db-form-title">
+                        <i class="fas fa-images"></i> Kelola Gambar Popup
+                    </h3>
+                    <p style="font-size:0.85rem;color:#7f8c8d;margin-bottom:16px;">
+                        Gambar yang diupload akan tampil sebagai popup berurutan saat user membuka website
+                    </p>
+
+                    <div class="db-form-group">
+                        <label class="db-form-label">
+                            Upload Image
+                            <span style="font-weight:normal;color:#7f8c8d;font-size:0.85rem;">(Maks. 2MB per
+                                foto)</span>
+                        </label>
+
+                        <!-- Upload area + thumbnail sejajar dalam satu baris -->
+                        <div class="db-popup-upload-wrapper">
+
+                            <!-- Kotak Import Image -->
+                            <div class="db-popup-upload-area" id="dbPopupUploadArea">
+                                <input type="file" id="dbPopupFileInput" accept="image/*" multiple
+                                    style="display:none;">
+                                <div class="db-popup-upload-placeholder">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <p>Import Image</p>
+                                </div>
+                            </div>
+
+                            <!-- Grid thumbnail gambar yang sudah diupload -->
+                            <div class="db-popup-grid" id="dbPopupGrid">
+                                <p class="db-popup-kosong" id="dbPopupKosong" style="display:none;"></p>
+                            </div>
+
+                        </div>
+
+                        <!-- Counter -->
+                        <p class="db-popup-counter" id="dbPopupCounter">0 foto diupload</p>
+                    </div>
+                </div>
+            </div>
         </main>
 
         <!-- Modal Edit Pengumuman -->
@@ -255,12 +341,7 @@
                 <p class="db-modal-desc">Masukkan nomor WhatsApp yang akan dihubungi:</p>
                 <div class="db-form-group">
                     <label class="db-form-label">Nomor WhatsApp</label>
-                    <input 
-                        type="tel" 
-                        class="db-form-input" 
-                        id="inputNomorWA" 
-                        placeholder="Contoh: 08123456789"
-                    >
+                    <input type="tel" class="db-form-input" id="inputNomorWA" placeholder="Contoh: 08123456789">
                     <small style="color:#7f8c8d; font-size:0.78rem; margin-top:5px; display:block;">
                         Format: 08xxx atau 628xxx
                     </small>
@@ -296,6 +377,42 @@
         </div>
     </div>
 
+    <!-- Modal Print -->
+    <div class="db-modal-overlay" id="modalPrint" style="display:none;">
+        <div class="db-modal-box">
+            <div class="db-modal-header">
+                <h3><i class="fas fa-print"></i> Print Laporan</h3>
+                <button class="db-modal-close" id="btnTutupModalPrint">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <p class="db-modal-desc" id="modalPrintDesc">
+                Pilih rentang tanggal yang ingin dicetak (maksimal 30 hari):
+            </p>
+
+            <div class="db-form-group">
+                <label class="db-form-label">Dari Tanggal</label>
+                <input type="date" class="db-form-input" id="printDari">
+            </div>
+
+            <div class="db-form-group">
+                <label class="db-form-label">Sampai Tanggal</label>
+                <input type="date" class="db-form-input" id="printSampai">
+                <small id="printWarning" style="color:#e74c3c;font-size:0.78rem;margin-top:5px;display:none;">
+                    <i class="fas fa-exclamation-triangle"></i> Maksimal rentang 30 hari
+                </small>
+            </div>
+
+            <div class="db-form-footer">
+                <button class="db-btn-submit" id="btnKonfirmasiPrint">
+                    <i class="fas fa-print"></i> Print Sekarang
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="scriptdash.js"></script>
 </body>
+
 </html>

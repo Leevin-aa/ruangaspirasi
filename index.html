@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruang Aspirasi Esemkasa</title>
+    <title>RASA - Ruang Aspirasi Esemkasa</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -53,7 +53,7 @@
                     <i class="fas fa-comment-dots"></i> Kritik dan Saran
                 </a>
                 <a href="#" class="nav-link" data-target="LaporPrasarana">
-                    <i class="fas fa-tools"></i> Laporan Prasarana
+                    <i class="fas fa-tools"></i> Laporan Sarana & Prasarana
                 </a>
             </nav>
 
@@ -78,7 +78,7 @@
             <!-- Hero / Banner Atas -->
             <section class="hero">
                 <div class="hero-info">
-                    <h1>Selamat Datang Di <br> <span>Ruang Aspirasi Esemkasa</span></h1>
+                    <h1>Selamat Datang Di RASA <br> <span>"Ruang Aspirasi Esemkasa"</span></h1>
                     <p>Sampaikan kritik, saran dan laporanmu untuk membantu mewujudkan sekolah yang lebih baik</p>
                 </div>
                 <div class="hero-graphic">
@@ -98,7 +98,7 @@
 
                 <div class="card action-card">
                     <div class="icon-circle bg-yellow"><i class="fas fa-wrench"></i></div>
-                    <h3>Lapor Prasarana</h3>
+                    <h3>Laporan Sarana & Prasarana</h3>
                     <p>Laporkan masalah dan kerusakan sekolah</p>
                     <button class="btn-primary">Buat laporan sekarang</button>
                 </div>
@@ -141,7 +141,7 @@
                         <!-- Legend: tampilkan angka total, bukan persen -->
                         <ul class="chart-legend">
                             <li><span class="dot blue"></span> Kritik &amp; Saran (<span id="percKritik">0</span>)</li>
-                            <li><span class="dot yellow"></span> Lapor Prasarana (<span id="percLapor">0</span>)</li>
+                            <li><span class="dot yellow"></span> Sarana & Prasarana (<span id="percLapor">0</span>)</li>
                             <li><span class="dot green"></span> Selesai (<span id="percSelesai">0</span>)</li>
                         </ul>
                     </div>
@@ -249,7 +249,10 @@
 
             <div class="card form-card">
                 <label class="form-label">Pengertian</label>
-                Laporan prasarana sekolah merupakan bentuk evaluasi warga sekolah untuk mengidentifikasi kerusakan atau penurunan kualitas fasilitas belajar demi menjaga keselamatan dan kenyamanan bersama. Laporan ini harus berbasis fakta objektif di lapangan dan disertai dengan rekomendasi tindakan perbaikan teknis yang ditujukan kepada pihak manajemen sekolah
+                Laporan Sarana & Prasarana sekolah merupakan bentuk evaluasi warga sekolah untuk mengidentifikasi
+                kerusakan atau penurunan kualitas fasilitas belajar demi menjaga keselamatan dan kenyamanan bersama.
+                Laporan ini harus berbasis fakta objektif di lapangan dan disertai dengan rekomendasi tindakan perbaikan
+                teknis yang ditujukan kepada pihak manajemen sekolah
             </div>
 
             <div class="card form-card">
@@ -257,7 +260,7 @@
                 <div class="form-group">
                     <label class="form-label">Detail Laporan</label>
                     <textarea class="form-input form-textarea" id="deskripsiLaporan"
-                        placeholder="Tulis laporan prasarana kamu di sini..."></textarea>
+                        placeholder="Tulis laporan Sarana & Prasarana kamu di sini..."></textarea>
                 </div>
 
                 <div class="form-group">
@@ -293,11 +296,29 @@
             </div>
 
         </main>
-        <!-- Akhir Halaman Laporan Prasarana -->
-
-
     </div>
-    <!-- Akhir app-container -->
+
+    <!-- ================================================ -->
+    <!-- POP UP PERINGATAN BLACKLIST                      -->
+    <!-- ================================================ -->
+    <div class="popup-overlay" id="popupBlacklist" style="display:none;">
+        <div class="popup-box">
+            <div class="popup-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="popup-title">Laporan Tidak Dapat Dikirim</h3>
+            <p class="popup-desc">
+                Laporan kamu mengandung kata-kata yang tidak pantas atau melanggar aturan penggunaan platform ini.
+            </p>
+            <div class="popup-kata-list" id="popupKataList"></div>
+            <p class="popup-note">
+                Harap gunakan bahasa yang sopan dan santun. Mohon perbaiki isi laporan sebelum mengirim kembali.
+            </p>
+            <button class="popup-btn-tutup" id="btnTutupPopupBlacklist">
+                <i class="fas fa-pen"></i> Perbaiki Laporan
+            </button>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>

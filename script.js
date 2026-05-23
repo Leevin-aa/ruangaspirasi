@@ -7,188 +7,53 @@ const navLinks = document.querySelectorAll('.nav-link');
 // BAGIAN 2: DAFTAR SEMUA ID HALAMAN
 const semuaHalaman = ['Beranda', 'Pengumuman', 'KritikSaran', 'LaporPrasarana'];
 
-// BAGIAN 3: FUNGSI BUKA/TUTUP SIDEBAR (khusus mobile)
-function toggleSidebar() {
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
+// ============================================================
+// BAGIAN: CEK BLACKLIST SEBELUM KIRIM
+// ============================================================
 
-    const icon = hamburger.querySelector('i');
-    icon.classList.toggle('fa-bars');
-    icon.classList.toggle('fa-times');
+function tampilkanPopupBlacklist(kataTermukan) {
+    const popup = document.getElementById('popupBlacklist');
+    const kataList = document.getElementById('popupKataList');
+
+    // Tampilkan kata-kata yang ditemukan
+    kataList.innerHTML = '<strong>Kata tidak pantas yang ditemukan:</strong><br>' +
+        kataTermukan.map(function (k) {
+            return '• ' + k.replace(/./g, '*'); // sensor kata dengan bintang
+        }).join('<br>');
+
+    popup.style.display = 'flex';
 }
 
-hamburger.addEventListener('click', toggleSidebar);
-overlay.addEventListener('click', toggleSidebar);
-
-// BAGIAN 4: FUNGSI PINDAH HALAMAN
-const sudahInit = {};
-
-function tampilkanHalaman(idHalaman) {
-    semuaHalaman.forEach(function (id) {
-        const el = document.getElementById(id);
-        if (el) el.style.display = 'none';
-    });
-
-    const halamanTuju = document.getElementById(idHalaman);
-    if (halamanTuju) {
-        halamanTuju.style.display = 'block';
-    } else {
-        console.warn('Halaman tidak ditemukan: ' + idHalaman);
-        return;
-    }
-
-    if (!sudahInit[idHalaman]) {
-        sudahInit[idHalaman] = true;
-
-        if (idHalaman === 'KritikSaran') initFormKritikSaran();
-        if (idHalaman === 'LaporPrasarana') initFormLaporan();
-    }
+function tutupPopupBlacklist() {
+    document.getElementById('popupBlacklist').style.display = 'none';
 }
 
-// BAGIAN 5: FUNGSI NAVIGASI + UPDATE ACTIVE NAVBAR
-function navigasiKe(idHalaman) {
-    tampilkanHalaman(idHalaman);
+// Tombol tutup popup
+document.getElementById('btnTutupPopupBlacklist').addEventListener('click', tutupPopupBlacklist);
 
-    navLinks.forEach(function (link) {
-        link.classList.remove('active');
-        if (link.dataset.target === idHalaman) {
-            link.classList.add('active');
-        }
-    });
-}
-
-// BAGIAN 6: EVENT KLIK PADA NAV-LINK
-navLinks.forEach(function (link) {
-    link.addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const target = this.dataset.target;
-
-        if (target) {
-            navigasiKe(target);
-        }
-
-        if (window.innerWidth <= 992) {
-            toggleSidebar();
-        }
-    });
+// Klik di luar popup juga menutup
+document.getElementById('popupBlacklist').addEventListener('click', function (e) {
+    if (e.target === this) tutupPopupBlacklist();
 });
 
-// BAGIAN 7: TOMBOL ACTION CARD DI BERANDA
-function bindTombolActionCard() {
-    const tombolKritik = document.querySelector('.action-card:nth-child(1) .btn-primary');
-    const tombolLapor = document.querySelector('.action-card:nth-child(2) .btn-primary');
-    const tombolPengumuman = document.querySelector('.action-card:nth-child(3) .btn-primary');
-
-    // Lihat Semua di card pengumuman beranda
-    const viewAll = document.querySelector('.view-all[data-target="Pengumuman"]');
-    if (viewAll) {
-        viewAll.addEventListener('click', function (e) {
-            e.preventDefault();
-            navigasiKe('Pengumuman');
-        });
-    }
-
-    if (tombolKritik) tombolKritik.addEventListener('click', function () { navigasiKe('KritikSaran'); });
-    if (tombolLapor) tombolLapor.addEventListener('click', function () { navigasiKe('LaporPrasarana'); });
-    if (tombolPengumuman) tombolPengumuman.addEventListener('click', function () { navigasiKe('Pengumuman'); });
-}
-
-// BAGIAN 8: FORMAT TANGGAL OTOMATIS
-// Mengubah string datetime dari DB menjadi format "Senin, 18/05/2026 07.00 WIB"
-function formatTanggalLengkap(datetimeStr) {
-    if (!datetimeStr) return '';
-
-    let tgl;
-    try {
-        tgl = new Date(datetimeStr.replace(' ', 'T'));
-    } catch (e) {
-        return datetimeStr;
-    }
-
-    if (isNaN(tgl.getTime())) return datetimeStr;
-
-    // Konversi ke WIB (UTC+7)
-    const offsetWIB = 7 * 60;
-    const utc = tgl.getTime() + (tgl.getTimezoneOffset() * 60000);
-    const wib = new Date(utc + (offsetWIB * 60000));
-
-    const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const hari = namaHari[wib.getDay()];
-
-    const hh = String(wib.getHours()).padStart(2, '0');
-    const mm = String(wib.getMinutes()).padStart(2, '0');
-    const dd = String(wib.getDate()).padStart(2, '0');
-    const mo = String(wib.getMonth() + 1).padStart(2, '0');
-    const yy = wib.getFullYear();
-
-    return `${hari}, ${dd}/${mo}/${yy} ${hh}.${mm} WIB`;
-}
-
-// BAGIAN 9: INISIALISASI SAAT HALAMAN PERTAMA LOAD
-window.onload = function () {
-    tampilkanHalaman('Beranda');
-    bindTombolActionCard();
-    loadPengumumanWebUtama();
-    loadStatistikDariDB();
-};
-
-// BAGIAN 10: FORM KRITIK & SARAN → KIRIM KE DATABASE
-btnKirim.addEventListener('click', function () {
-    const jenisLaporan = document.getElementById('jenisKritik').value;
-    const isiDeskripsi = deskripsi.value.trim();
-
-    // Validasi dropdown
-    if (!jenisLaporan) {
-        alert('Pilih jenis laporan terlebih dahulu!');
-        document.getElementById('jenisKritik').focus();
-        return;
-    }
-
-    if (isiDeskripsi === '') {
-        alert('Deskripsi tidak boleh kosong!');
-        deskripsi.focus();
-        return;
-    }
-
-    btnKirim.disabled = true;
-    btnKirim.innerText = 'Mengirim...';
-
-    const formData = new FormData();
-    formData.append('deskripsi', isiDeskripsi);
-    formData.append('jenis', jenisLaporan); // ← tambahkan ini
-
-    daftarFoto.forEach(function (file) {
-        formData.append('foto[]', file, file.name);
-    });
-
-    fetch('api/kritik.php', {
+// Fungsi cek blacklist ke API
+function cekBlacklist(teks) {
+    return fetch('api/blacklist.php', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ teks: teks })
     })
         .then(function (res) { return res.json(); })
         .then(function (data) {
-            if (data.status === 'success') {
-                alert('Laporan berhasil dikirim! Terima kasih.');
-
-                // Reset form termasuk dropdown
-                document.getElementById('jenisKritik').value = '';
-                deskripsi.value = '';
-                daftarFoto = [];
-                previewList.innerHTML = '';
-                updateCounterKritik();
-            } else {
-                alert('Gagal mengirim: ' + data.message);
+            if (data.status === 'ok') {
+                return data.data; // { aman: true/false, kata_terlarang: [...] }
             }
+            return { aman: true, kata_terlarang: [] }; // jika API error, loloskan
         })
         .catch(function () {
-            alert('Gagal terhubung ke server. Coba lagi.');
-        })
-        .finally(function () {
-            btnKirim.disabled = false;
-            btnKirim.innerText = 'Submit';
+            return { aman: true, kata_terlarang: [] }; // jika gagal koneksi, loloskan
         });
-});
+}
 
 function initFormKritikSaran() {
 
@@ -321,13 +186,9 @@ function initFormKritikSaran() {
         }
     });
 
-    btnKirim.addEventListener('click', function () {
+    btnKirim.addEventListener('click', async function () {
         const jenisLaporan = document.getElementById('jenisKritik').value;
         const isiDeskripsi = deskripsi.value.trim();
-
-        // DEBUG - cek nilai yang akan dikirim
-        console.log('Jenis:', jenisLaporan);
-        console.log('Deskripsi:', isiDeskripsi);
 
         if (!jenisLaporan) {
             alert('Pilih jenis laporan terlebih dahulu!');
@@ -340,33 +201,42 @@ function initFormKritikSaran() {
             return;
         }
 
+        // CEK BLACKLIST sebelum kirim
         btnKirim.disabled = true;
+        btnKirim.innerText = 'Memeriksa...';
+
+        const hasilCek = await cekBlacklist(isiDeskripsi);
+
+        if (!hasilCek.aman) {
+            tampilkanPopupBlacklist(hasilCek.kata_terlarang);
+            btnKirim.disabled = false;
+            btnKirim.innerText = 'Submit';
+            return; // STOP, tidak kirim
+        }
+
         btnKirim.innerText = 'Mengirim...';
 
         const formData = new FormData();
         formData.append('deskripsi', isiDeskripsi);
         formData.append('jenis', jenisLaporan);
 
-        // DEBUG - cek isi formData
-        for (let pair of formData.entries()) {
-            console.log(pair[0] + ': ' + pair[1]);
-        }
+        daftarFoto.forEach(function (file) {
+            formData.append('foto[]', file, file.name);
+        });
 
         fetch('api/kritik.php', {
             method: 'POST',
             body: formData
         })
-            // ... sisa sama
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 if (data.status === 'success') {
                     alert('Kritik & Saran berhasil dikirim! Terima kasih.');
-
+                    document.getElementById('jenisKritik').value = '';
                     deskripsi.value = '';
                     daftarFoto = [];
                     previewList.innerHTML = '';
                     updateCounterKritik();
-
                 } else {
                     alert('Gagal mengirim: ' + data.message);
                 }
@@ -381,6 +251,144 @@ function initFormKritikSaran() {
     });
 
 }
+
+// BAGIAN 3: FUNGSI BUKA/TUTUP SIDEBAR (khusus mobile)
+function toggleSidebar() {
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+
+    const icon = hamburger.querySelector('i');
+    icon.classList.toggle('fa-bars');
+    icon.classList.toggle('fa-times');
+}
+
+hamburger.addEventListener('click', toggleSidebar);
+overlay.addEventListener('click', toggleSidebar);
+
+// BAGIAN 4: FUNGSI PINDAH HALAMAN
+const sudahInit = {};
+
+function tampilkanHalaman(idHalaman) {
+    semuaHalaman.forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+
+    const halamanTuju = document.getElementById(idHalaman);
+    if (halamanTuju) {
+        halamanTuju.style.display = 'block';
+    } else {
+        console.warn('Halaman tidak ditemukan: ' + idHalaman);
+        return;
+    }
+
+    if (!sudahInit[idHalaman]) {
+        sudahInit[idHalaman] = true;
+
+        if (idHalaman === 'KritikSaran') initFormKritikSaran();
+        if (idHalaman === 'LaporPrasarana') initFormLaporan();
+    }
+}
+
+// BAGIAN 5: FUNGSI NAVIGASI + UPDATE ACTIVE NAVBAR
+function navigasiKe(idHalaman) {
+    tampilkanHalaman(idHalaman);
+
+    navLinks.forEach(function (link) {
+        link.classList.remove('active');
+        if (link.dataset.target === idHalaman) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// BAGIAN 6: EVENT KLIK PADA NAV-LINK
+navLinks.forEach(function (link) {
+    link.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        const target = this.dataset.target;
+
+        if (target) {
+            navigasiKe(target);
+        }
+
+        if (window.innerWidth <= 992) {
+            toggleSidebar();
+        }
+    });
+});
+
+// BAGIAN 7: TOMBOL ACTION CARD DI BERANDA
+function bindTombolActionCard() {
+    const tombolKritik = document.querySelector('.action-card:nth-child(1) .btn-primary');
+    const tombolLapor = document.querySelector('.action-card:nth-child(2) .btn-primary');
+    const tombolPengumuman = document.querySelector('.action-card:nth-child(3) .btn-primary');
+
+    // Lihat Semua di card pengumuman beranda
+    const viewAll = document.querySelector('.view-all[data-target="Pengumuman"]');
+    if (viewAll) {
+        viewAll.addEventListener('click', function (e) {
+            e.preventDefault();
+            navigasiKe('Pengumuman');
+        });
+    }
+
+    if (tombolKritik) tombolKritik.addEventListener('click', function () { navigasiKe('KritikSaran'); });
+    if (tombolLapor) tombolLapor.addEventListener('click', function () { navigasiKe('LaporPrasarana'); });
+    if (tombolPengumuman) tombolPengumuman.addEventListener('click', function () { navigasiKe('Pengumuman'); });
+}
+
+// BAGIAN 8: FORMAT TANGGAL OTOMATIS
+// Mengubah string datetime dari DB menjadi format "Senin, 18/05/2026 07.00 WIB"
+function formatTanggalLengkap(datetimeStr) {
+    if (!datetimeStr) return '';
+
+    let tgl;
+    try {
+        tgl = new Date(datetimeStr.replace(' ', 'T'));
+    } catch (e) {
+        return datetimeStr;
+    }
+
+    if (isNaN(tgl.getTime())) return datetimeStr;
+
+    // Konversi ke WIB (UTC+7)
+    const offsetWIB = 7 * 60;
+    const utc = tgl.getTime() + (tgl.getTimezoneOffset() * 60000);
+    const wib = new Date(utc + (offsetWIB * 60000));
+
+    const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const hari = namaHari[wib.getDay()];
+
+    const hh = String(wib.getHours()).padStart(2, '0');
+    const mm = String(wib.getMinutes()).padStart(2, '0');
+    const dd = String(wib.getDate()).padStart(2, '0');
+    const mo = String(wib.getMonth() + 1).padStart(2, '0');
+    const yy = wib.getFullYear();
+
+    return `${hari}, ${dd}/${mo}/${yy} ${hh}.${mm} WIB`;
+}
+
+// BAGIAN 9: INISIALISASI SAAT HALAMAN PERTAMA LOAD
+window.onload = function () {
+    tampilkanHalaman('Beranda');
+    bindTombolActionCard();
+    loadPengumumanWebUtama();
+    loadStatistikDariDB();
+    loadDanTampilkanPopupUser();
+
+    // Event listener popup blacklist
+    const btnTutup = document.getElementById('btnTutupPopupBlacklist');
+    if (btnTutup) btnTutup.addEventListener('click', tutupPopupBlacklist);
+
+    const popupOverlay = document.getElementById('popupBlacklist');
+    if (popupOverlay) {
+        popupOverlay.addEventListener('click', function(e) {
+            if (e.target === this) tutupPopupBlacklist();
+        });
+    }
+};
 
 // BAGIAN 11: FORM LAPORAN PRASARANA → KIRIM KE DATABASE
 function initFormLaporan() {
@@ -512,55 +520,66 @@ function initFormLaporan() {
         }
     });
 
-    btnKirim.addEventListener('click', function () {
-        const isiDeskripsi = deskripsi.value.trim();
+    btnKirim.addEventListener('click', async function () {
+    const isiDeskripsi = deskripsi.value.trim();
 
-        if (isiDeskripsi === '') {
-            alert('Deskripsi tidak boleh kosong!');
-            deskripsi.focus();
-            return;
-        }
+    if (isiDeskripsi === '') {
+        alert('Deskripsi tidak boleh kosong!');
+        deskripsi.focus();
+        return;
+    }
 
-        // Validasi foto WAJIB untuk Laporan Prasarana
-        if (daftarFoto.length === 0) {
-            alert('Upload minimal 1 foto sebagai bukti laporan!');
-            return;
-        }
+    if (daftarFoto.length === 0) {
+        alert('Upload minimal 1 foto sebagai bukti laporan!');
+        return;
+    }
 
-        btnKirim.disabled = true;
-        btnKirim.innerText = 'Mengirim...';
+    // CEK BLACKLIST sebelum kirim
+    btnKirim.disabled  = true;
+    btnKirim.innerText = 'Memeriksa...';
 
-        const formData = new FormData();
-        formData.append('deskripsi', isiDeskripsi);
+    const hasilCek = await cekBlacklist(isiDeskripsi);
 
-        daftarFoto.forEach(function (file) {
-            formData.append('foto[]', file, file.name);
-        });
+    if (!hasilCek.aman) {
+        tampilkanPopupBlacklist(hasilCek.kata_terlarang);
+        btnKirim.disabled  = false;
+        btnKirim.innerText = 'Submit';
+        return; // STOP, tidak kirim
+    }
 
-        fetch('api/laporan.php', {
-            method: 'POST',
-            body: formData
-        })
-            .then(function (res) { return res.json(); })
-            .then(function (data) {
-                if (data.status === 'success') {
-                    alert('Laporan Prasarana berhasil dikirim! Terima kasih.');
-                    deskripsi.value = '';
-                    daftarFoto = [];
-                    previewList.innerHTML = '';
-                    updateCounterLaporan();
-                } else {
-                    alert('Gagal mengirim: ' + data.message);
-                }
-            })
-            .catch(function () {
-                alert('Gagal terhubung ke server. Coba lagi.');
-            })
-            .finally(function () {
-                btnKirim.disabled = false;
-                btnKirim.innerText = 'Submit';
-            });
+    btnKirim.innerText = 'Mengirim...';
+
+    const formData = new FormData();
+    formData.append('deskripsi', isiDeskripsi);
+
+    daftarFoto.forEach(function(file) {
+        formData.append('foto[]', file, file.name);
     });
+
+    fetch('api/laporan.php', {
+        method : 'POST',
+        body   : formData
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status === 'success') {
+            alert('Laporan berhasil dikirim! Terima kasih.');
+            deskripsi.value       = '';
+            daftarFoto            = [];
+            previewList.innerHTML = '';
+            updateCounterLaporan();
+        } else {
+            alert('Gagal mengirim: ' + data.message);
+        }
+    })
+    .catch(function() {
+        alert('Gagal terhubung ke server. Coba lagi.');
+    })
+    .finally(function() {
+        btnKirim.disabled  = false;
+        btnKirim.innerText = 'Submit';
+    });
+});
 
 }
 
@@ -681,3 +700,295 @@ function loadStatistikDariDB() {
             console.warn('Gagal memuat statistik');
         });
 }
+
+// ============================================================
+// TAMBAHAN script.js — Popup Gambar Berurutan untuk User
+// Tempelkan di bagian BAWAH script.js yang sudah ada
+// ============================================================
+
+// ── State popup gambar ──
+var _popupImages   = [];   // array gambar dari server
+var _popupIndex    = 0;    // indeks gambar yang sedang ditampilkan
+var _popupShown    = false; // sudah pernah tampil di sesi ini?
+
+// ── Buat elemen popup ──
+function _buatElemen() {
+    // Overlay
+    var overlay = document.createElement('div');
+    overlay.classList.add('popup-img-overlay');
+    overlay.id = 'popupImgOverlay';
+
+    // Box
+    var box = document.createElement('div');
+    box.classList.add('popup-img-box');
+    box.id = 'popupImgBox';
+
+    // Gambar
+    var img = document.createElement('img');
+    img.id  = 'popupImgEl';
+    img.alt = 'Popup';
+
+    // Tombol tutup
+    var btnClose = document.createElement('button');
+    btnClose.classList.add('popup-img-close');
+    btnClose.id        = 'popupImgClose';
+    btnClose.innerHTML = '<i class="fas fa-times"></i>';
+    btnClose.title     = 'Tutup';
+
+    // Counter (1 dari 3)
+    var counter = document.createElement('div');
+    counter.classList.add('popup-img-counter');
+    counter.id = 'popupImgCounter';
+
+    box.appendChild(btnClose);
+    box.appendChild(img);
+    box.appendChild(counter);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    // Event: klik tombol tutup → tampilkan gambar berikutnya
+    btnClose.addEventListener('click', function() {
+        _tutupDanLanjut();
+    });
+
+    // Klik di luar box → tutup semua (tidak lanjut)
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            _tutupSemua();
+        }
+    });
+
+    // ESC → tutup semua
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var ov = document.getElementById('popupImgOverlay');
+            if (ov && ov.style.display !== 'none') {
+                _tutupSemua();
+            }
+        }
+    });
+}
+
+// ── Tampilkan gambar pada index tertentu ──
+function _tampilkanGambar(index) {
+    if (index >= _popupImages.length) {
+        _tutupSemua();
+        return;
+    }
+
+    var overlay = document.getElementById('popupImgOverlay');
+    var img     = document.getElementById('popupImgEl');
+    var counter = document.getElementById('popupImgCounter');
+
+    if (!overlay || !img) return;
+
+    // Reset animasi: lepas & pasang lagi
+    var box = document.getElementById('popupImgBox');
+    if (box) {
+        box.style.animation = 'none';
+        void box.offsetHeight; // force reflow
+        box.style.animation = '';
+    }
+
+    img.src = 'uploads/popup/' + _popupImages[index].nama_file;
+    counter.innerText = (index + 1) + ' dari ' + _popupImages.length;
+
+    overlay.style.display = 'flex';
+    _popupIndex = index;
+}
+
+// ── Tutup popup & tampilkan gambar berikutnya ──
+function _tutupDanLanjut() {
+    var berikutnya = _popupIndex + 1;
+    if (berikutnya >= _popupImages.length) {
+        _tutupSemua();
+    } else {
+        _tampilkanGambar(berikutnya);
+    }
+}
+
+// ── Tutup semua popup ──
+function _tutupSemua() {
+    var overlay = document.getElementById('popupImgOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+}
+
+// ── Load gambar popup dari API & mulai tampilkan ──
+function loadDanTampilkanPopupUser() {
+    // Hanya tampil sekali per sesi browser
+    if (sessionStorage.getItem('popupSudahTampil') === 'true') return;
+
+    fetch('api/popup.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status !== 'success' || !data.data || data.data.length === 0) return;
+
+        _popupImages = data.data;
+        _popupIndex  = 0;
+
+        // Buat elemen jika belum ada
+        if (!document.getElementById('popupImgOverlay')) {
+            _buatElemen();
+        }
+
+        // Tandai sudah tampil di sesi ini
+        sessionStorage.setItem('popupSudahTampil', 'true');
+
+        // Tunggu sebentar supaya halaman sudah siap
+        setTimeout(function() {
+            _tampilkanGambar(0);
+        }, 600);
+    })
+    .catch(function() {
+        console.warn('Gagal memuat gambar popup user');
+    });
+}
+
+// ============================================================
+// TAMBAHAN script.js — Popup Gambar Berurutan untuk User
+// Tempelkan di bagian BAWAH script.js yang sudah ada
+// ============================================================
+
+var _popupImages = [];
+var _popupIndex  = 0;
+
+// ── Buat elemen popup ──
+function _buatElemen() {
+    var overlay = document.createElement('div');
+    overlay.classList.add('popup-img-overlay');
+    overlay.id = 'popupImgOverlay';
+
+    var box = document.createElement('div');
+    box.classList.add('popup-img-box');
+    box.id = 'popupImgBox';
+
+    var img = document.createElement('img');
+    img.id  = 'popupImgEl';
+    img.alt = 'Popup';
+
+    var btnClose = document.createElement('button');
+    btnClose.classList.add('popup-img-close');
+    btnClose.id        = 'popupImgClose';
+    btnClose.innerHTML = '<i class="fas fa-times"></i>';
+    btnClose.title     = 'Tutup';
+
+    var counter = document.createElement('div');
+    counter.classList.add('popup-img-counter');
+    counter.id = 'popupImgCounter';
+
+    box.appendChild(btnClose);
+    box.appendChild(img);
+    box.appendChild(counter);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    // HANYA tombol close yang bisa menutup popup
+    btnClose.addEventListener('click', function() {
+        _tutupDanLanjut();
+    });
+
+    // Blokir klik di overlay (tidak bisa tutup dengan klik di luar)
+    overlay.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Blokir klik pada gambar (tidak ada aksi)
+    img.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+
+    // Blokir ESC keyboard
+    document.addEventListener('keydown', function(e) {
+        var ov = document.getElementById('popupImgOverlay');
+        if (ov && ov.style.display !== 'none') {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+}
+
+// ── Tampilkan gambar pada index tertentu ──
+function _tampilkanGambar(index) {
+    if (index >= _popupImages.length) {
+        _tutupSemua();
+        return;
+    }
+
+    var overlay = document.getElementById('popupImgOverlay');
+    var img     = document.getElementById('popupImgEl');
+    var counter = document.getElementById('popupImgCounter');
+    if (!overlay || !img) return;
+
+    // Reset animasi
+    var box = document.getElementById('popupImgBox');
+    if (box) {
+        box.style.animation = 'none';
+        void box.offsetHeight;
+        box.style.animation = '';
+    }
+
+    img.src = 'uploads/popup/' + _popupImages[index].nama_file;
+    counter.innerText = (index + 1) + ' dari ' + _popupImages.length;
+
+    overlay.style.display = 'flex';
+
+    // Kunci scroll halaman di belakang popup
+    document.body.style.overflow = 'hidden';
+
+    _popupIndex = index;
+}
+
+// ── Tutup popup & tampilkan gambar berikutnya ──
+function _tutupDanLanjut() {
+    var berikutnya = _popupIndex + 1;
+    if (berikutnya >= _popupImages.length) {
+        _tutupSemua();
+    } else {
+        _tampilkanGambar(berikutnya);
+    }
+}
+
+// ── Tutup semua popup ──
+function _tutupSemua() {
+    var overlay = document.getElementById('popupImgOverlay');
+    if (overlay) overlay.style.display = 'none';
+
+    // Kembalikan scroll halaman
+    document.body.style.overflow = '';
+}
+
+// ── Load gambar popup dari API & mulai tampilkan ──
+function loadDanTampilkanPopupUser() {
+    if (sessionStorage.getItem('popupSudahTampil') === 'true') return;
+
+    fetch('api/popup.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.status !== 'success' || !data.data || data.data.length === 0) return;
+
+        _popupImages = data.data;
+        _popupIndex  = 0;
+
+        if (!document.getElementById('popupImgOverlay')) {
+            _buatElemen();
+        }
+
+        sessionStorage.setItem('popupSudahTampil', 'true');
+
+        setTimeout(function() {
+            _tampilkanGambar(0);
+        }, 600);
+    })
+    .catch(function() {
+        console.warn('Gagal memuat gambar popup user');
+    });
+}
+
+// Panggil di window.onload yang sudah ada:
+// loadDanTampilkanPopupUser();
+window.addEventListener('load', function() {
+    loadDanTampilkanPopupUser();
+});
+ENDOFFILE

@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Laporan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+        }
+
+        body {
+    background: #f0f0f0;
+    padding: 20px;
+    overflow-x: hidden;
+}
+
+        /* ── Kontainer A4 ── */
+        .halaman {
+
+            width: 794px;
+            min-height: 1123px;
+
+            background: white;
+
+            margin: 20px auto 40px auto;
+
+            padding: 45px;
+
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .print-header {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #2c3e50;
+        }
+
+        .print-judul {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .print-sekolah {
+            font-size: 0.9rem;
+            color: #2c3e50;
+            margin-top: 3px;
+        }
+
+        .print-periode {
+            font-size: 0.85rem;
+            color: #555;
+            margin-top: 3px;
+        }
+
+        /* ── Item Laporan ── */
+        .print-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .print-item {
+            border: 1px solid #dde3ea;
+            border-radius: 8px;
+            padding: 14px 16px;
+            /* Hindari terpotong di tengah halaman */
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+        /* Badge jenis Kritik/Saran */
+        .print-badge {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+        }
+
+        .print-badge-kritik {
+            background: #fdecea;
+            color: #c0392b;
+            border: 1px solid #f5c6c6;
+        }
+
+        .print-badge-saran {
+            background: #eaf4fb;
+            color: #2980b9;
+            border: 1px solid #aed6f1;
+        }
+
+        .print-badge-laporan {
+            background: #fef5d1;
+            color: #d4a017;
+            border: 1px solid #f9e79f;
+        }
+
+        .print-item-deskripsi {
+            font-size: 0.88rem;
+            color: #000000;
+            line-height: 1.6;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        /* Foto */
+        .print-foto-list {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .print-foto-list img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #dde3ea;
+        }
+
+        .print-item-tanggal {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        /* ── Kosong ── */
+        .print-kosong {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        /* ── Loading ── */
+        .print-loading {
+            text-align: center;
+            padding: 40px;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        /* ── Tombol Print ── */
+        .floating-actions,
+        .btn-top {
+            display: block;
+            width: 210mm;
+            margin: 15px auto;
+            padding: 12px;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .btn-print-now:hover {
+            background: #1a252f;
+        }
+
+        /* ───────────────────────── */
+        /* Floating Action Buttons */
+        /* ───────────────────────── */
+
+        /* ───────────────────────── */
+        /* Tombol Atas */
+        /* ───────────────────────── */
+
+        .top-actions {
+            width: 210mm;
+            margin: 10px auto 10px auto;
+
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        /* Tombol umum */
+        .btn-print-now,
+        .btn-pdf {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+            min-width: 180px;
+        }
+
+        /* Print */
+        .btn-print-now {
+            background: #2c3e50;
+        }
+
+        .btn-print-now:hover {
+            background: #1a252f;
+        }
+
+        /* PDF */
+        .btn-pdf {
+            background: #c0392b;
+        }
+
+        .btn-pdf:hover {
+            background: #962d22;
+        }
+
+        /* Tombol Scroll Atas */
+        .btn-top {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+
+            width: 50px;
+            height: 50px;
+
+            border: none;
+            border-radius: 50%;
+
+            background: #2c3e50;
+            color: white;
+
+            font-size: 1.3rem;
+            cursor: pointer;
+
+            display: none;
+
+            z-index: 9999;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            transition: 0.2s;
+        }
+
+        .btn-top:hover {
+            transform: translateY(-3px);
+            background: #1a252f;
+        }
+
+        /* Tombol umum */
+        .btn-print-now,
+        .btn-pdf {
+            border: none;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            color: white;
+            min-width: 170px;
+        }
+
+        /* Print */
+        .btn-print-now {
+            background: #2c3e50;
+        }
+
+        .btn-print-now:hover {
+            background: #1a252f;
+        }
+
+        /* PDF */
+        .btn-pdf {
+            background: #c0392b;
+        }
+
+        .btn-pdf:hover {
+            background: #962d22;
+        }
+
+        /* Tombol atas */
+        .btn-top {
+            position: fixed;
+            right: 25px;
+            bottom: 25px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: none;
+            background: #2c3e50;
+            color: white;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: 0.2s;
+        }
+
+        .btn-top:hover {
+            transform: translateY(-3px);
+            background: #1a252f;
+        }
+
+        html,
+        body {
+            overflow-x: hidden;
+        }
+
+        /* ── CSS saat PRINT ── */
+        @media print {
+
+            html,
+            body {
+                width: 210mm;
+                height: auto;
+                margin: 0;
+                padding: 0;
+            }
+
+            body {
+                background: white;
+            }
+
+            .halaman {
+                box-shadow: none;
+                margin: 0;
+                width: 100%;
+                padding: 0;
+            }
+
+            .btn-print-now {
+                display: none !important;
+            }
+
+            .print-item {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+
+            .print-header {
+                break-after: avoid;
+                page-break-after: avoid;
+                margin-bottom: 12px;
+                padding-bottom: 8px;
+            }
+
+            .print-list {
+                margin-top: 10px;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-actions">
+
+        <button class="btn-print-now no-print" onclick="window.print()">
+            🖨 Print
+        </button>
+
+        <button class="btn-pdf no-print" onclick="downloadPDF()">
+            📄 Download PDF
+        </button>
+
+    </div>
+
+    <button class="btn-top no-print" id="btnTop" onclick="scrollToTop()">
+        ↑
+    </button>
+
+    <div class="halaman" id="halamanPrint">
+        <div class="print-loading">⏳ Memuat data...</div>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const jenis = params.get('jenis') || 'kritik';
+        const dari = params.get('dari') || '';
+        const sampai = params.get('sampai') || '';
+
+        function formatTglIndo(str) {
+            if (!str) return '-';
+            const d = new Date(str.replace(' ', 'T'));
+            return String(d.getDate()).padStart(2, '0') + '/' +
+                String(d.getMonth() + 1).padStart(2, '0') + '/' +
+                d.getFullYear() + ' ' +
+                String(d.getHours()).padStart(2, '0') + '.' +
+                String(d.getMinutes()).padStart(2, '0');
+        }
+
+        function formatTglPeriode(str) {
+            if (!str) return '-';
+            const d = new Date(str);
+            return String(d.getDate()).padStart(2, '0') + '/' +
+                String(d.getMonth() + 1).padStart(2, '0') + '/' +
+                d.getFullYear();
+        }
+
+        const judulMap = {
+            'kritik': 'LAPORAN KRITIK DAN SARAN',
+            'laporan': 'LAPORAN SARANA DAN PRASARANA'
+        };
+
+        // URL foto sesuai jenis
+        const fotoBaseUrl = jenis === 'kritik'
+            ? '../uploads/kritik_saran/'
+            : '../uploads/laporan_prasarana/';
+
+        const apiUrl = jenis === 'kritik'
+            ? '../api/kritik.php'
+            : '../api/laporan.php';
+
+        fetch(apiUrl)
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                const halaman = document.getElementById('halamanPrint');
+
+                if (data.status !== 'success') {
+                    halaman.innerHTML = '<div class="print-kosong">Gagal memuat data.</div>';
+                    return;
+                }
+
+                // Filter tanggal
+                const tglDari = dari ? new Date(dari + 'T00:00:00') : null;
+                const tglSampai = sampai ? new Date(sampai + 'T23:59:59') : null;
+
+                let dataFilter = data.data.filter(function (item) {
+                    const tglItem = new Date(item.created_at.replace(' ', 'T'));
+                    if (tglDari && tglItem < tglDari) return false;
+                    if (tglSampai && tglItem > tglSampai) return false;
+                    return true;
+                });
+
+                // Bangun isi
+                let isiHTML = '';
+
+                if (dataFilter.length === 0) {
+                    isiHTML = '<div class="print-kosong">Tidak ada data pada periode ini.</div>';
+                } else {
+                    isiHTML = '<div class="print-list">';
+
+                    dataFilter.forEach(function (item) {
+
+                        // Badge jenis
+                        let badgeHTML = '';
+                        if (jenis === 'kritik') {
+                            if (item.jenis === 'Kritik') {
+                                badgeHTML = '<span class="print-badge print-badge-kritik">Kritik</span>';
+                            } else {
+                                badgeHTML = '<span class="print-badge print-badge-saran">Saran</span>';
+                            }
+                        } else {
+                            badgeHTML = '<span class="print-badge print-badge-laporan">Laporan Prasarana</span>';
+                        }
+
+                        // Foto
+                        let fotoHTML = '';
+                        if (item.foto && item.foto.length > 0) {
+                            fotoHTML = '<div class="print-foto-list">';
+                            item.foto.forEach(function (namaFile) {
+                                fotoHTML += `<img src="${fotoBaseUrl}${namaFile}" alt="Foto">`;
+                            });
+                            fotoHTML += '</div>';
+                        }
+
+                        isiHTML += `
+                        <div class="print-item">
+                            ${badgeHTML}
+                            <p class="print-item-deskripsi">${item.deskripsi}</p>
+                            ${fotoHTML}
+                            <p class="print-item-tanggal">${formatTglIndo(item.created_at)}</p>
+                        </div>
+                    `;
+                    });
+
+                    isiHTML += '</div>';
+                }
+
+                halaman.innerHTML = `
+                <div class="print-header">
+                    <p class="print-judul">${judulMap[jenis] || 'LAPORAN'}</p>
+                    <p class="print-sekolah">SMKN 1 BANYUWANGI</p>
+                    <p class="print-periode">${formatTglPeriode(dari)} – ${formatTglPeriode(sampai)}</p>
+                </div>
+                ${isiHTML}
+            `;
+            })
+            .catch(function () {
+                document.getElementById('halamanPrint').innerHTML =
+                    '<div class="print-kosong">Gagal terhubung ke server.</div>';
+            });
+
+        /* ───────────────────────── */
+        /* Scroll ke atas */
+        /* ───────────────────────── */
+
+        const btnTop = document.getElementById('btnTop');
+
+        window.addEventListener('scroll', function () {
+
+            if (window.scrollY > 300) {
+                btnTop.style.display = 'block';
+            } else {
+                btnTop.style.display = 'none';
+            }
+
+        });
+
+        function scrollToTop() {
+
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+
+        }
+
+        /* ───────────────────────── */
+        /* Download PDF */
+        /* ───────────────────────── */
+
+        async function downloadPDF() {
+
+    const element = document.getElementById('halamanPrint');
+
+    // sementara hilangkan shadow & radius
+    element.style.boxShadow = 'none';
+    element.style.borderRadius = '0';
+    element.style.margin = '0 auto';
+
+    const jenisText = judulMap[jenis] || 'laporan';
+
+    const opt = {
+
+        margin: 0,
+
+        filename: `${jenisText}.pdf`,
+
+        image: {
+            type: 'jpeg',
+            quality: 1
+        },
+
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            logging: false
+        },
+
+        jsPDF: {
+            unit: 'pt',
+            format: 'a4',
+            orientation: 'portrait'
+        }
+
+    };
+
+    await html2pdf()
+        .set(opt)
+        .from(element)
+        .save();
+
+    // balikin style preview
+    element.style.boxShadow = '';
+    element.style.borderRadius = '';
+    element.style.margin = '';
+
+}
+
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+</body>
+
+</html>

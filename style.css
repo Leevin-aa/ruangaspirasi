@@ -808,3 +808,359 @@ body {
 .upload-size-error i {
     margin-right: 4px;
 }
+
+/* ================================================ */
+/* POP UP BLACKLIST                                 */
+/* ================================================ */
+
+.popup-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.popup-box {
+    background: #fff;
+    border-radius: 20px;
+    padding: 35px 30px;
+    width: 420px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+
+.popup-icon {
+    width: 70px;
+    height: 70px;
+    background: #fdecea;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px auto;
+    font-size: 1.8rem;
+    color: #e74c3c;
+}
+
+.popup-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 12px;
+}
+
+.popup-desc {
+    font-size: 0.88rem;
+    color: #555;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.popup-kata-list {
+    background: #fdecea;
+    border: 1px solid #f5c6c6;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    font-size: 0.85rem;
+    color: #c0392b;
+    font-weight: 600;
+    line-height: 1.8;
+    text-align: left;
+}
+
+.popup-note {
+    font-size: 0.82rem;
+    color: #7f8c8d;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.popup-btn-tutup {
+    background: #2c3e50;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.popup-btn-tutup:hover {
+    background: #1a252f;
+    transform: translateY(-2px);
+}
+
+/* ================================================ */
+/* POPUP IMAGE MANAGER - DASHBOARD (styledash.css) */
+/* ================================================ */
+
+/* Upload Area Popup */
+.db-popup-upload-wrapper {
+    margin-bottom: 20px;
+}
+
+.db-popup-upload-area {
+    width: 100%;
+    border: 2px dashed #b0bec5;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #fafafa;
+}
+
+.db-popup-upload-area:hover {
+    border-color: #4a90e2;
+    background: #f0f7ff;
+}
+
+.db-popup-upload-placeholder i {
+    font-size: 2.5rem;
+    color: #4a90e2;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.db-popup-upload-placeholder p {
+    font-size: 0.95rem;
+    color: #2c3e50;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.db-popup-upload-placeholder span {
+    font-size: 0.78rem;
+    color: #7f8c8d;
+}
+
+/* Grid Gambar Popup */
+.db-popup-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 5px 0;
+    min-height: 40px;
+}
+
+.db-popup-kosong {
+    font-size: 0.85rem;
+    color: #aaa;
+    padding: 5px;
+    width: 100%;
+}
+
+/* Card Gambar Popup */
+.db-popup-card {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid #e8edf2;
+    transition: 0.3s;
+    flex-shrink: 0;
+    background: #f0f4f8;
+}
+
+.db-popup-card:hover {
+    border-color: #4a90e2;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+.db-popup-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    display: block;
+}
+
+/* Badge urutan */
+.db-popup-badge-urutan {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: rgba(44, 62, 80, 0.85);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    pointer-events: none;
+    line-height: 1.6;
+}
+
+/* Tombol hapus di pojok */
+.db-popup-btn-hapus {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(231, 76, 60, 0.9);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.db-popup-btn-hapus:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+/* Loading spinner di card */
+.db-popup-loading {
+    width: 130px;
+    height: 130px;
+    border-radius: 12px;
+    border: 2px dashed #b0bec5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: #7f8c8d;
+    flex-direction: column;
+    gap: 8px;
+    background: #f8fafc;
+}
+
+.db-popup-loading i {
+    font-size: 1.2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* Error upload */
+.db-popup-error {
+    background: #fdecea;
+    border: 1px solid #f5c6c6;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    color: #c0392b;
+    display: none;
+}
+
+/* ================================================ */
+/* POPUP GAMBAR - WEB USER (style.css)             */
+/* ================================================ */
+
+/* Overlay gelap */
+.popup-img-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: popupFadeIn 0.3s ease;
+}
+
+@keyframes popupFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+/* Kotak popup */
+.popup-img-box {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    animation: popupSlideUp 0.35s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@keyframes popupSlideUp {
+    from { transform: translateY(30px) scale(0.95); opacity: 0; }
+    to   { transform: translateY(0) scale(1);       opacity: 1; }
+}
+
+/* Gambar di popup */
+.popup-img-box img {
+    max-width: 80vw;
+    max-height: 78vh;
+    border-radius: 16px;
+    object-fit: contain;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    display: block;
+}
+
+/* Tombol tutup (X) - melayang di pojok kanan atas */
+.popup-img-close {
+    position: absolute;
+    top: -16px;
+    right: -16px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.25);
+    color: #2c3e50;
+    transition: 0.2s;
+    z-index: 1;
+}
+
+.popup-img-close:hover {
+    background: #e74c3c;
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Indikator urutan (1 dari 3, dll) */
+.popup-img-counter {
+    margin-top: 14px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(4px);
+    color: white;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
