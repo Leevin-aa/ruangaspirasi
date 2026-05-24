@@ -2,7 +2,42 @@
 // DASHBOARD - scriptdash.js (VERSI LENGKAP & BERSIH)
 // ============================================================
 
-// BAGIAN 1: PROTEKSI & LOGOUT
+// BAGIAN 1: HAMBURGER MOBILE
+const dbHamburger = document.getElementById('dbHamburger');
+const dbSidebar   = document.getElementById('dbSidebar');
+const dbOverlay   = document.getElementById('dbSidebarOverlay');
+
+if (dbHamburger) {
+    dbHamburger.addEventListener('click', function() {
+        dbSidebar.classList.toggle('active');
+        dbOverlay.classList.toggle('active');
+        const icon = dbHamburger.querySelector('i');
+        icon.classList.toggle('fa-bars');
+        icon.classList.toggle('fa-times');
+    });
+}
+if (dbOverlay) {
+    dbOverlay.addEventListener('click', function() {
+        dbSidebar.classList.remove('active');
+        dbOverlay.classList.remove('active');
+        const icon = dbHamburger.querySelector('i');
+        icon.classList.add('fa-bars');
+        icon.classList.remove('fa-times');
+    });
+}
+
+function tutupSidebarMobile() {
+    if (window.innerWidth <= 992 && dbSidebar) {
+        dbSidebar.classList.remove('active');
+        if (dbOverlay) dbOverlay.classList.remove('active');
+        if (dbHamburger) {
+            const icon = dbHamburger.querySelector('i');
+            if (icon) { icon.classList.add('fa-bars'); icon.classList.remove('fa-times'); }
+        }
+    }
+}
+
+// BAGIAN 2: PROTEKSI, PROFIL & LOGOUT
 const btnLogout = document.getElementById('btnLogout');
 if (btnLogout) {
 
@@ -10,19 +45,27 @@ if (btnLogout) {
         window.location.href = 'login.html';
     }
 
+    const namaAdmin = sessionStorage.getItem('namaAdmin') || 'Admin';
+    const roleAdmin = sessionStorage.getItem('roleAdmin') || 'admin';
+
+    btnLogout.innerHTML = `
+        <i class="fas fa-user-circle"></i>
+        <span id="namaAdminTampil">${namaAdmin}</span>
+        <i class="fas fa-chevron-up" style="font-size:0.7rem;"></i>
+    `;
+    btnLogout.classList.add('btn-mini-profil');
+
     btnLogout.addEventListener('click', function() {
-        fetch('../api/login.php', {
-            method  : 'DELETE',
-            headers : { 'Content-Type': 'application/json' }
-        })
-        .finally(function() {
-            sessionStorage.clear();
-            window.location.href = 'login.html';
-        });
+        bukaModalProfil();
     });
+
+    const menuKelolaAkun = document.getElementById('sectionKelolaAkun');
+    if (menuKelolaAkun) {
+        menuKelolaAkun.style.display = roleAdmin === 'superadmin' ? 'block' : 'none';
+    }
 }
 
-// BAGIAN 2: LOGIN PAGE
+// BAGIAN 3: LOGIN PAGE
 const btnLogin = document.getElementById('btnLogin');
 if (btnLogin) {
 
@@ -54,7 +97,8 @@ if (btnLogin) {
         .then(function(data) {
             if (data.status === 'success') {
                 sessionStorage.setItem('sudahLogin', 'true');
-                sessionStorage.setItem('namaAdmin', data.data.username);
+                sessionStorage.setItem('namaAdmin',  data.data.username);
+                sessionStorage.setItem('roleAdmin',  data.data.role);
                 window.location.href = 'index.html';
             } else {
                 errorMsg.innerText     = data.message;
@@ -77,7 +121,7 @@ if (btnLogin) {
     });
 }
 
-// BAGIAN 3: SPA DASHBOARD
+// BAGIAN 4: SPA DASHBOARD
 const dbPages    = ['db-Beranda', 'db-Pengumuman', 'db-KritikSaran', 'db-LaporPrasarana', 'db-pengaturan'];
 const dbNavLinks = document.querySelectorAll('.db-nav-link');
 
@@ -94,6 +138,8 @@ function dbTampilkanHalaman(idHalaman) {
         link.classList.remove('active');
         if (link.dataset.target === idHalaman) link.classList.add('active');
     });
+
+    tutupSidebarMobile();
 }
 
 dbNavLinks.forEach(function(link) {
@@ -116,7 +162,7 @@ if (document.getElementById('db-Beranda')) {
     dbTampilkanHalaman('db-Beranda');
 }
 
-// BAGIAN 4: HELPER FORMAT WAKTU
+// BAGIAN 5: HELPER FORMAT WAKTU
 function formatTanggalPengumuman(tanggalStr, createdAt) {
     const namaHari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
     const tgl  = new Date(createdAt.replace(' ', 'T'));
@@ -139,7 +185,7 @@ function formatDatetime(datetimeStr) {
     return dd+'/'+mm+'/'+yy+' '+hh+'.'+mn;
 }
 
-// BAGIAN 5: PENGUMUMAN
+// BAGIAN 6: PENGUMUMAN
 function loadPengumuman() {
     fetch('../api/pengumuman.php')
     .then(function(res) { return res.json(); })
@@ -296,7 +342,7 @@ if (btnUmumkan) {
     });
 }
 
-// BAGIAN 6: KRITIK & SARAN
+// BAGIAN 7: KRITIK & SARAN
 let filterKritikAktif     = 'semua';
 let filterTglDariKritik   = '';
 let filterTglSampaiKritik = '';
@@ -453,6 +499,37 @@ if (btnResetKritik) {
     });
 }
 
+// Hapus Semua Kritik
+const btnHapusSemuaKritik = document.getElementById('btnHapusSemuaKritik');
+if (btnHapusSemuaKritik) {
+    btnHapusSemuaKritik.addEventListener('click', function() {
+        if (dataKritikSemua.length === 0) { alert('Tidak ada data untuk dihapus.'); return; }
+        if (!confirm('Hapus SEMUA laporan Kritik & Saran? Aksi ini tidak bisa dibatalkan!')) return;
+
+        btnHapusSemuaKritik.disabled  = true;
+        btnHapusSemuaKritik.innerText = 'Menghapus...';
+
+        const promises = dataKritikSemua.map(function(item) {
+            return fetch('../api/kritik.php', {
+                method  : 'DELETE',
+                headers : { 'Content-Type': 'application/json' },
+                body    : JSON.stringify({ id: item.id })
+            }).then(function(res) { return res.json(); });
+        });
+
+        Promise.all(promises).then(function() {
+            dataKritikSemua = [];
+            const elStat = document.getElementById('statKritik');
+            if (elStat) elStat.innerText = 0;
+            tampilkanKritik();
+            loadKritikSaran();
+        }).finally(function() {
+            btnHapusSemuaKritik.disabled  = false;
+            btnHapusSemuaKritik.innerHTML = '<i class="fas fa-trash-alt"></i> Hapus Semua';
+        });
+    });
+}
+
 function hapusKritik(id, elDiv) {
     if (!confirm('Hapus laporan ini?')) return;
     fetch('../api/kritik.php', {
@@ -471,7 +548,7 @@ function hapusKritik(id, elDiv) {
     });
 }
 
-// BAGIAN 7: LAPORAN PRASARANA
+// BAGIAN 8: LAPORAN PRASARANA
 let filterTglDariLaporan   = '';
 let filterTglSampaiLaporan = '';
 let dataLaporanSemua       = [];
@@ -585,6 +662,36 @@ if (btnResetLaporan) {
     });
 }
 
+// Hapus Semua Laporan
+const btnHapusSemuaLaporan = document.getElementById('btnHapusSemuaLaporan');
+if (btnHapusSemuaLaporan) {
+    btnHapusSemuaLaporan.addEventListener('click', function() {
+        if (dataLaporanSemua.length === 0) { alert('Tidak ada data untuk dihapus.'); return; }
+        if (!confirm('Hapus SEMUA laporan Prasarana? Aksi ini tidak bisa dibatalkan!')) return;
+
+        btnHapusSemuaLaporan.disabled  = true;
+        btnHapusSemuaLaporan.innerText = 'Menghapus...';
+
+        const promises = dataLaporanSemua.map(function(item) {
+            return fetch('../api/laporan.php', {
+                method  : 'DELETE',
+                headers : { 'Content-Type': 'application/json' },
+                body    : JSON.stringify({ id: item.id })
+            }).then(function(res) { return res.json(); });
+        });
+
+        Promise.all(promises).then(function() {
+            dataLaporanSemua = [];
+            const elStat = document.getElementById('statLaporan');
+            if (elStat) elStat.innerText = 0;
+            tampilkanLaporan();
+        }).finally(function() {
+            btnHapusSemuaLaporan.disabled  = false;
+            btnHapusSemuaLaporan.innerHTML = '<i class="fas fa-trash-alt"></i> Hapus Semua';
+        });
+    });
+}
+
 function updateStatusLaporan(id, elDiv) {
     fetch('../api/laporan.php', {
         method  : 'PATCH',
@@ -621,14 +728,11 @@ function hapusLaporan(id, elDiv) {
     });
 }
 
-// BAGIAN 8: MODAL PREVIEW FOTO
+// BAGIAN 9: MODAL PREVIEW FOTO
 function bukaModalFoto(src) {
     const modal = document.getElementById('modalFotoDB');
     const img   = document.getElementById('modalFotoImgDB');
-    if (modal && img) {
-        img.src = src;
-        modal.style.display = 'flex';
-    }
+    if (modal && img) { img.src = src; modal.style.display = 'flex'; }
 }
 
 const modalFotoDB = document.getElementById('modalFotoDB');
@@ -641,7 +745,7 @@ if (modalFotoDB) {
     });
 }
 
-// BAGIAN 9: BLACKLIST
+// BAGIAN 10: BLACKLIST
 function loadBlacklist() {
     fetch('../api/blacklist.php?action=list')
     .then(function(res) { return res.json(); })
@@ -726,7 +830,7 @@ if (btnTambahBlacklist) {
     });
 }
 
-// BAGIAN 10: POPUP IMAGES
+// BAGIAN 11: POPUP IMAGES
 let dataPopupImages = [];
 
 function updatePopupCounter() {
@@ -884,7 +988,272 @@ function prosesUploadPopup(files) {
     });
 }
 
-// BAGIAN 11: LOAD SEMUA DATA
+// BAGIAN 12: PROFIL (username DISABLED - tidak bisa diubah)
+let profilAwalPassword = '';
+
+function bukaModalProfil() {
+    const username = sessionStorage.getItem('namaAdmin') || '';
+    document.getElementById('profilUsername').value     = username;
+    document.getElementById('profilPasswordLama').value = '';
+    document.getElementById('profilPasswordBaru').value = '';
+    document.getElementById('modalProfil').style.display = 'flex';
+}
+
+const btnTutupProfil = document.getElementById('btnTutupProfil');
+if (btnTutupProfil) {
+    btnTutupProfil.addEventListener('click', function() {
+        document.getElementById('modalProfil').style.display = 'none';
+    });
+}
+
+const btnSimpanProfil = document.getElementById('btnSimpanProfil');
+if (btnSimpanProfil) {
+    btnSimpanProfil.addEventListener('click', function() {
+        // Username tidak bisa diubah, hanya kirim ganti password
+        const passwordLama = document.getElementById('profilPasswordLama').value;
+        const passwordBaru = document.getElementById('profilPasswordBaru').value;
+
+        if (!passwordBaru) { alert('Isi password baru untuk menyimpan perubahan.'); return; }
+        if (!passwordLama) { alert('Password lama harus diisi!'); return; }
+
+        btnSimpanProfil.disabled  = true;
+        btnSimpanProfil.innerText = 'Menyimpan...';
+
+        const username = sessionStorage.getItem('namaAdmin') || '';
+
+        fetch('../api/akun.php', {
+            method  : 'PATCH',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ username, passwordLama, passwordBaru })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'success') {
+                document.getElementById('modalProfil').style.display = 'none';
+                alert('Password berhasil diupdate!');
+            } else {
+                alert('Gagal: ' + data.message);
+            }
+        })
+        .catch(function() { alert('Gagal terhubung ke server.'); })
+        .finally(function() {
+            btnSimpanProfil.disabled  = false;
+            btnSimpanProfil.innerHTML = '<i class="fas fa-save"></i> Simpan';
+        });
+    });
+}
+
+const btnLogoutDariProfil = document.getElementById('btnLogoutDariProfil');
+if (btnLogoutDariProfil) {
+    btnLogoutDariProfil.addEventListener('click', function() {
+        if (!confirm('Yakin ingin logout?')) return;
+        fetch('../api/login.php', {
+            method  : 'DELETE',
+            headers : { 'Content-Type': 'application/json' }
+        })
+        .finally(function() {
+            sessionStorage.clear();
+            window.location.href = 'login.html';
+        });
+    });
+}
+
+// Toggle show/hide password
+document.querySelectorAll('.btn-toggle-pw').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        const input = document.getElementById(this.dataset.target);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        this.innerHTML = input.type === 'password'
+            ? '<i class="fas fa-eye"></i>'
+            : '<i class="fas fa-eye-slash"></i>';
+    });
+});
+
+// BAGIAN 13: KELOLA AKUN
+function loadDaftarAkun() {
+    const list = document.getElementById('listAkunAdmin');
+    if (!list) return;
+    list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Memuat...</p>';
+
+    fetch('../api/akun.php')
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        list.innerHTML = '';
+        if (!data.data || data.data.length === 0) {
+            list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Belum ada akun admin lain.</p>';
+            return;
+        }
+        data.data.forEach(function(akun) { buatKartuAkun(akun, list); });
+    })
+    .catch(function() { list.innerHTML = '<p style="color:#e74c3c;font-size:0.85rem;">Gagal memuat data.</p>'; });
+}
+
+function buatKartuAkun(akun, container) {
+    const div = document.createElement('div');
+    div.classList.add('db-akun-item');
+    div.dataset.id = akun.id;
+
+    const tgl = new Date(akun.created_at.replace(' ','T'));
+    const tglStr = String(tgl.getDate()).padStart(2,'0') + '/' +
+                   String(tgl.getMonth()+1).padStart(2,'0') + '/' + tgl.getFullYear();
+
+    div.innerHTML = `
+        <div class="db-akun-info">
+            <div class="db-akun-avatar"><i class="fas fa-user"></i></div>
+            <div>
+                <p class="db-akun-username" id="usernameLabel_${akun.id}">${akun.username}</p>
+                <p class="db-akun-tanggal">Dibuat: ${tglStr}</p>
+            </div>
+        </div>
+        <div class="db-akun-actions">
+            <button class="db-btn-edit-akun" data-id="${akun.id}"><i class="fas fa-edit"></i> Edit</button>
+            <button class="db-btn-hapus-akun" data-id="${akun.id}"><i class="fas fa-trash"></i></button>
+        </div>
+        <div class="db-akun-edit-form" id="editForm_${akun.id}" style="display:none;">
+            <div class="db-akun-edit-field">
+                <label>Username Baru</label>
+                <input type="text" class="db-form-input" id="editUsername_${akun.id}" value="${akun.username}">
+            </div>
+            <div class="db-akun-edit-field">
+                <label>Password Baru <span style="font-weight:normal;color:#aaa;font-size:0.78rem;">(kosongkan jika tidak diganti)</span></label>
+                <div class="db-pw-wrapper">
+                    <input type="password" class="db-form-input" id="editPassword_${akun.id}" placeholder="Password baru...">
+                    <button class="btn-toggle-pw" data-target="editPassword_${akun.id}" type="button"><i class="fas fa-eye"></i></button>
+                </div>
+            </div>
+            <div class="db-akun-edit-actions">
+                <button class="db-btn-submit db-btn-save-akun" data-id="${akun.id}" style="padding:8px 18px;font-size:0.85rem;"><i class="fas fa-save"></i> Simpan</button>
+                <button class="db-btn-batal-edit" data-id="${akun.id}" style="background:none;border:1px solid #dde3ea;color:#555;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:0.85rem;">Batal</button>
+            </div>
+        </div>
+    `;
+
+    div.querySelector('.db-btn-edit-akun').addEventListener('click', function() {
+        const form = document.getElementById('editForm_' + akun.id);
+        form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    });
+    div.querySelector('.db-btn-batal-edit').addEventListener('click', function() {
+        document.getElementById('editForm_' + akun.id).style.display = 'none';
+    });
+    div.querySelector('.db-btn-save-akun').addEventListener('click', function() {
+        const username = document.getElementById('editUsername_' + akun.id).value.trim();
+        const password = document.getElementById('editPassword_' + akun.id).value;
+        if (!username) { alert('Username tidak boleh kosong!'); return; }
+        fetch('../api/akun.php', {
+            method  : 'PUT',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ id: akun.id, username, password })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'success') {
+                document.getElementById('usernameLabel_' + akun.id).innerText = username;
+                document.getElementById('editForm_' + akun.id).style.display  = 'none';
+                akun.username = username;
+                alert('Akun berhasil diupdate!');
+            } else alert('Gagal: ' + data.message);
+        });
+    });
+    div.querySelector('.db-btn-hapus-akun').addEventListener('click', function() {
+        if (!confirm('Hapus akun "' + akun.username + '"?')) return;
+        fetch('../api/akun.php', {
+            method  : 'DELETE',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ id: akun.id })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'success') {
+                div.remove();
+                const list = document.getElementById('listAkunAdmin');
+                if (list && list.children.length === 0) {
+                    list.innerHTML = '<p style="color:#aaa;font-size:0.85rem;">Belum ada akun admin lain.</p>';
+                }
+            } else alert('Gagal: ' + data.message);
+        });
+    });
+    div.querySelectorAll('.btn-toggle-pw').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            const input = document.getElementById(this.dataset.target);
+            if (!input) return;
+            input.type = input.type === 'password' ? 'text' : 'password';
+            this.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+    });
+
+    container.appendChild(div);
+}
+
+const btnBuatAkun = document.getElementById('btnBuatAkun');
+if (btnBuatAkun) {
+    btnBuatAkun.addEventListener('click', function() {
+        document.getElementById('buatUsername').value  = '';
+        document.getElementById('buatPassword').value  = '';
+        document.getElementById('buatPassword2').value = '';
+        document.getElementById('modalBuatAkun').style.display = 'flex';
+    });
+}
+
+const btnTutupBuatAkun = document.getElementById('btnTutupBuatAkun');
+if (btnTutupBuatAkun) {
+    btnTutupBuatAkun.addEventListener('click', function() {
+        document.getElementById('modalBuatAkun').style.display = 'none';
+    });
+}
+
+const btnKonfirmasiBuatAkun = document.getElementById('btnKonfirmasiBuatAkun');
+if (btnKonfirmasiBuatAkun) {
+    btnKonfirmasiBuatAkun.addEventListener('click', function() {
+        const username  = document.getElementById('buatUsername').value.trim();
+        const password  = document.getElementById('buatPassword').value;
+        const password2 = document.getElementById('buatPassword2').value;
+        if (!username || !password || !password2) { alert('Semua kolom harus diisi!'); return; }
+        if (password !== password2) { alert('Password tidak cocok!'); return; }
+        if (password.length < 6) { alert('Password minimal 6 karakter!'); return; }
+
+        btnKonfirmasiBuatAkun.disabled  = true;
+        btnKonfirmasiBuatAkun.innerText = 'Membuat...';
+
+        fetch('../api/akun.php', {
+            method  : 'POST',
+            headers : { 'Content-Type': 'application/json' },
+            body    : JSON.stringify({ username, password })
+        })
+        .then(function(res) { return res.json(); })
+        .then(function(data) {
+            if (data.status === 'success') {
+                document.getElementById('modalBuatAkun').style.display = 'none';
+                alert('Akun berhasil dibuat!');
+                loadDaftarAkun();
+            } else alert('Gagal: ' + data.message);
+        })
+        .catch(function() { alert('Gagal terhubung ke server.'); })
+        .finally(function() {
+            btnKonfirmasiBuatAkun.disabled  = false;
+            btnKonfirmasiBuatAkun.innerHTML = '<i class="fas fa-user-plus"></i> Buat Akun';
+        });
+    });
+}
+
+if (sessionStorage.getItem('roleAdmin') === 'superadmin') {
+    if (document.getElementById('db-Beranda')) loadDaftarAkun();
+}
+
+// BAGIAN 14: SCROLL TO TOP (tombol arrow ke atas)
+const btnScrollTop = document.getElementById('btnScrollTop');
+const dbMain = document.querySelector('.db-main');
+
+if (dbMain && btnScrollTop) {
+    dbMain.addEventListener('scroll', function() {
+        btnScrollTop.style.display = dbMain.scrollTop > 300 ? 'flex' : 'none';
+    });
+    btnScrollTop.addEventListener('click', function() {
+        dbMain.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+// BAGIAN 15: LOAD SEMUA DATA
 if (document.getElementById('db-Beranda')) {
     loadPengumuman();
     loadKritikSaran();
@@ -894,19 +1263,29 @@ if (document.getElementById('db-Beranda')) {
     initPopupUpload();
 }
 
-// BAGIAN 12: PRINT LAPORAN
+// BAGIAN 16: PRINT LAPORAN (dengan dropdown pilihan kritik/saran/semua)
 let jenisPrintAktif = '';
 
 function bukaModalPrint(jenis) {
     jenisPrintAktif = jenis;
     const desc = document.getElementById('modalPrintDesc');
     if (desc) {
-        desc.innerText = 'Pilih rentang tanggal laporan ' +
+        desc.innerText = 'Pilih rentang tanggal ' +
             (jenis === 'kritik' ? 'Kritik & Saran' : 'Prasarana') +
             ' yang ingin dicetak (maks. 30 hari):';
     }
+
+    // Tampilkan/sembunyikan dropdown filter jenis (hanya untuk kritik)
+    const wrapperFilterJenis = document.getElementById('wrapperFilterJenisPrint');
+    if (wrapperFilterJenis) {
+        wrapperFilterJenis.style.display = jenis === 'kritik' ? 'block' : 'none';
+    }
+
     document.getElementById('printDari').value   = '';
     document.getElementById('printSampai').value = '';
+    if (document.getElementById('printFilterJenis')) {
+        document.getElementById('printFilterJenis').value = 'semua';
+    }
     document.getElementById('printWarning').style.display = 'none';
     document.getElementById('modalPrint').style.display = 'flex';
 }
@@ -955,7 +1334,16 @@ if (btnKonfirmasiPrint) {
         const selisih = (new Date(sampai) - new Date(dari)) / (1000 * 60 * 60 * 24);
         if (selisih < 0)  { alert('Tanggal sampai harus setelah tanggal dari!'); return; }
         if (selisih > 30) { alert('Maksimal rentang tanggal adalah 30 hari!'); return; }
-        const url = 'print.html?jenis=' + jenisPrintAktif + '&dari=' + dari + '&sampai=' + sampai;
+
+        // Ambil filter jenis jika ada
+        const filterJenisEl = document.getElementById('printFilterJenis');
+        const filterJenis   = filterJenisEl ? filterJenisEl.value : 'semua';
+
+        let url = 'print.html?jenis=' + jenisPrintAktif + '&dari=' + dari + '&sampai=' + sampai;
+        if (jenisPrintAktif === 'kritik' && filterJenis !== 'semua') {
+            url += '&subJenis=' + filterJenis;
+        }
+
         window.open(url, '_blank');
         document.getElementById('modalPrint').style.display = 'none';
     });
