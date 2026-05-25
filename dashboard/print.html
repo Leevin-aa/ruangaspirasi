@@ -14,10 +14,10 @@
         }
 
         body {
-    background: #f0f0f0;
-    padding: 20px;
-    overflow-x: hidden;
-}
+            background: #f0f0f0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
 
         /* ── Kontainer A4 ── */
         .halaman {
@@ -393,6 +393,7 @@
         const jenis = params.get('jenis') || 'kritik';
         const dari = params.get('dari') || '';
         const sampai = params.get('sampai') || '';
+        const filter = params.get('filter') || 'semua';
 
         function formatTglIndo(str) {
             if (!str) return '-';
@@ -413,7 +414,9 @@
         }
 
         const judulMap = {
-            'kritik': 'LAPORAN KRITIK DAN SARAN',
+            'kritik': filter === 'Kritik' ? 'LAPORAN KRITIK' :
+                filter === 'Saran' ? 'LAPORAN SARAN' :
+                    'LAPORAN KRITIK DAN SARAN',
             'laporan': 'LAPORAN SARANA DAN PRASARANA'
         };
 
@@ -440,12 +443,20 @@
                 const tglDari = dari ? new Date(dari + 'T00:00:00') : null;
                 const tglSampai = sampai ? new Date(sampai + 'T23:59:59') : null;
 
+                // Filter tanggal
                 let dataFilter = data.data.filter(function (item) {
                     const tglItem = new Date(item.created_at.replace(' ', 'T'));
                     if (tglDari && tglItem < tglDari) return false;
                     if (tglSampai && tglItem > tglSampai) return false;
                     return true;
                 });
+
+                // Filter jenis (Kritik/Saran) — hanya berlaku untuk jenis kritik
+                if (jenis === 'kritik' && filter !== 'semua') {
+                    dataFilter = dataFilter.filter(function (item) {
+                        return item.jenis === filter;
+                    });
+                }
 
                 // Bangun isi
                 let isiHTML = '';
@@ -537,51 +548,51 @@
 
         async function downloadPDF() {
 
-    const element = document.getElementById('halamanPrint');
+            const element = document.getElementById('halamanPrint');
 
-    // sementara hilangkan shadow & radius
-    element.style.boxShadow = 'none';
-    element.style.borderRadius = '0';
-    element.style.margin = '0 auto';
+            // sementara hilangkan shadow & radius
+            element.style.boxShadow = 'none';
+            element.style.borderRadius = '0';
+            element.style.margin = '0 auto';
 
-    const jenisText = judulMap[jenis] || 'laporan';
+            const jenisText = judulMap[jenis] || 'laporan';
 
-    const opt = {
+            const opt = {
 
-        margin: 0,
+                margin: 0,
 
-        filename: `${jenisText}.pdf`,
+                filename: `${jenisText}.pdf`,
 
-        image: {
-            type: 'jpeg',
-            quality: 1
-        },
+                image: {
+                    type: 'jpeg',
+                    quality: 1
+                },
 
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            logging: false
-        },
+                html2canvas: {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false
+                },
 
-        jsPDF: {
-            unit: 'pt',
-            format: 'a4',
-            orientation: 'portrait'
+                jsPDF: {
+                    unit: 'pt',
+                    format: 'a4',
+                    orientation: 'portrait'
+                }
+
+            };
+
+            await html2pdf()
+                .set(opt)
+                .from(element)
+                .save();
+
+            // balikin style preview
+            element.style.boxShadow = '';
+            element.style.borderRadius = '';
+            element.style.margin = '';
+
         }
-
-    };
-
-    await html2pdf()
-        .set(opt)
-        .from(element)
-        .save();
-
-    // balikin style preview
-    element.style.boxShadow = '';
-    element.style.borderRadius = '';
-    element.style.margin = '';
-
-}
 
     </script>
 

@@ -1335,14 +1335,17 @@ if (btnKonfirmasiPrint) {
         if (selisih < 0)  { alert('Tanggal sampai harus setelah tanggal dari!'); return; }
         if (selisih > 30) { alert('Maksimal rentang tanggal adalah 30 hari!'); return; }
 
-        // Ambil filter jenis jika ada
-        const filterJenisEl = document.getElementById('printFilterJenis');
-        const filterJenis   = filterJenisEl ? filterJenisEl.value : 'semua';
-
-        let url = 'print.html?jenis=' + jenisPrintAktif + '&dari=' + dari + '&sampai=' + sampai;
-        if (jenisPrintAktif === 'kritik' && filterJenis !== 'semua') {
-            url += '&subJenis=' + filterJenis;
+        // Ambil filter jenis yang aktif (hanya untuk kritik)
+        let filterJenis = 'semua';
+        if (jenisPrintAktif === 'kritik') {
+            const btnAktif = document.querySelector('.db-filter-btn.active');
+            if (btnAktif) filterJenis = btnAktif.dataset.filter;
         }
+
+        const url = 'print.html?jenis=' + jenisPrintAktif +
+                    '&dari=' + dari +
+                    '&sampai=' + sampai +
+                    '&filter=' + filterJenis;
 
         window.open(url, '_blank');
         document.getElementById('modalPrint').style.display = 'none';

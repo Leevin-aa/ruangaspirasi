@@ -7,15 +7,10 @@ const navLinks = document.querySelectorAll('.nav-link');
 // BAGIAN 2: DAFTAR SEMUA ID HALAMAN
 const semuaHalaman = ['Beranda', 'Pengumuman', 'KritikSaran', 'LaporPrasarana'];
 
-// ============================================================
-// BAGIAN: CEK BLACKLIST SEBELUM KIRIM
-// ============================================================
-
 function tampilkanPopupBlacklist(kataTermukan) {
     const popup = document.getElementById('popupBlacklist');
     const kataList = document.getElementById('popupKataList');
 
-    // Tampilkan kata-kata yang ditemukan
     kataList.innerHTML = '<strong>Kata tidak pantas yang ditemukan:</strong><br>' +
         kataTermukan.map(function (k) {
             return '• ' + k.replace(/./g, '*'); // sensor kata dengan bintang
@@ -28,10 +23,8 @@ function tutupPopupBlacklist() {
     document.getElementById('popupBlacklist').style.display = 'none';
 }
 
-// Tombol tutup popup
 document.getElementById('btnTutupPopupBlacklist').addEventListener('click', tutupPopupBlacklist);
 
-// Klik di luar popup juga menutup
 document.getElementById('popupBlacklist').addEventListener('click', function (e) {
     if (e.target === this) tutupPopupBlacklist();
 });
@@ -82,7 +75,6 @@ function initFormKritikSaran() {
         const fileBaru = Array.from(this.files);
         const MAKS_SIZE = 2 * 1024 * 1024; // 2MB
 
-        // Ambil/buat elemen pesan error ukuran
         let pesanError = document.getElementById('pesanUkuranKritik');
         if (!pesanError) {
             pesanError = document.createElement('p');
@@ -211,7 +203,7 @@ function initFormKritikSaran() {
             tampilkanPopupBlacklist(hasilCek.kata_terlarang);
             btnKirim.disabled = false;
             btnKirim.innerText = 'Submit';
-            return; // STOP, tidak kirim
+            return;
         }
 
         btnKirim.innerText = 'Mengirim...';
@@ -258,8 +250,13 @@ function toggleSidebar() {
     overlay.classList.toggle('active');
 
     const icon = hamburger.querySelector('i');
-    icon.classList.toggle('fa-bars');
-    icon.classList.toggle('fa-times');
+    if (sidebar.classList.contains('active')) {
+        icon.classList.remove('fa-bars');
+        icon.classList.add('fa-times');
+    } else {
+        icon.classList.remove('fa-times');
+        icon.classList.add('fa-bars');
+    }
 }
 
 hamburger.addEventListener('click', toggleSidebar);
@@ -303,18 +300,19 @@ function navigasiKe(idHalaman) {
 }
 
 // BAGIAN 6: EVENT KLIK PADA NAV-LINK
-navLinks.forEach(function (link) {
-    link.addEventListener('click', function (e) {
+navLinks.forEach(function(link) {
+    link.addEventListener('click', function(e) {
         e.preventDefault();
-
         const target = this.dataset.target;
+        if (target) navigasiKe(target);
 
-        if (target) {
-            navigasiKe(target);
-        }
-
+        // Tutup sidebar di mobile
         if (window.innerWidth <= 992) {
-            toggleSidebar();
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            const icon = hamburger.querySelector('i');
+            icon.classList.remove('fa-times');
+            icon.classList.add('fa-bars');
         }
     });
 });

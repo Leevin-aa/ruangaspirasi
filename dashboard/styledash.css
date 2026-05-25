@@ -1,6 +1,11 @@
 * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,sans-serif; }
 
-body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hidden; }
+html, body {
+    margin:0; padding:0; min-height:100vh; background:#f0f4f8;
+    overflow-x:hidden;
+    /* Kunci: tidak ada scroll horizontal di level html/body */
+    max-width:100vw;
+}
 
 /* ================================================ */
 /* LOGIN                                            */
@@ -43,34 +48,52 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 /* ================================================ */
 /* LAYOUT UTAMA                                     */
 /* ================================================ */
-.db-container { display:flex; min-height:100vh; width:100%; }
+.db-container {
+    display:flex;
+    min-height:100vh;
+    width:100%;
+    /* Pastikan tidak overflow horizontal */
+    overflow-x:hidden;
+    position:relative;
+}
 
-/* ── Hamburger ── */
+/* ── Hamburger (KANAN) ── */
 .db-hamburger {
-    display:none; position:fixed; top:15px; left:15px; z-index:1100;
-    background:#2c3e50; color:white; border:none; padding:12px 14px;
-    border-radius:10px; cursor:pointer; font-size:1.1rem;
-    box-shadow:0 4px 15px rgba(0,0,0,0.2); transition:0.3s;
+    display:none;
+    position:fixed;
+    top:14px;
+    right:14px;        /* ← pindah ke KANAN */
+    left:auto;         /* ← reset left */
+    z-index:1200;
+    background:#2c3e50; color:white; border:none;
+    padding:11px 14px; border-radius:10px; cursor:pointer; font-size:1.1rem;
+    box-shadow:0 4px 15px rgba(0,0,0,0.25); transition:0.3s;
 }
 .db-hamburger:hover { background:#1a252f; }
 
 /* Overlay mobile */
 .db-sidebar-overlay {
-    display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-    background:rgba(0,0,0,0.5); z-index:1000;
+    display:none;
+    position:fixed; top:0; left:0; width:100%; height:100%;
+    background:rgba(0,0,0,0.55); z-index:1050;
 }
 .db-sidebar-overlay.active { display:block; }
 
 /* ── SIDEBAR ── */
 .db-sidebar {
-    width:260px; background:#ffffff; border-right:1px solid #e1e8ed;
-    display:flex; flex-direction:column; padding:25px 18px;
-    position:sticky; top:0; height:100vh; flex-shrink:0; z-index:1001;
-    transition:left 0.4s ease;
+    width:260px;
+    background:#ffffff;
+    border-right:1px solid #e1e8ed;
+    display:flex; flex-direction:column;
+    padding:25px 18px;
+    position:sticky; top:0; height:100vh;
+    flex-shrink:0;
+    z-index:100;
+    transition:transform 0.4s ease;
 }
 .db-sidebar-header {
-    display:flex; align-items:center; gap:12px; margin-bottom:32px;
-    padding-bottom:18px; border-bottom:1px solid #eee;
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:32px; padding-bottom:18px; border-bottom:1px solid #eee;
 }
 .db-logo { width:42px; flex-shrink:0; }
 .db-sidebar-header h2 { font-size:0.82rem; color:#2c3e50; line-height:1.4; }
@@ -87,8 +110,14 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 
 /* ── MAIN CONTENT ── */
 .db-main {
-    flex:1; padding:30px; min-height:100vh; background:#f0f4f8;
-    overflow-y:auto; width:0;
+    flex:1;
+    padding:30px;
+    min-height:100vh;
+    background:#f0f4f8;
+    overflow-y:auto;
+    overflow-x:hidden;   /* ← kunci: cegah scroll horizontal */
+    /* width:0 trick agar flex tidak overflow */
+    min-width:0;
 }
 
 .db-page { min-height:calc(100vh - 60px); }
@@ -115,9 +144,9 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
     display:flex; flex-direction:column; gap:6px;
 }
 .db-stat-icon {
-    width:44px; height:44px; border-radius:10px; display:flex;
-    align-items:center; justify-content:center; font-size:1.2rem;
-    color:#2c3e50; background:rgba(255,255,255,0.4); margin-bottom:6px;
+    width:44px; height:44px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; color:#2c3e50; background:rgba(255,255,255,0.4); margin-bottom:6px;
 }
 .db-stat-label { font-size:0.72rem; font-weight:700; color:#2c3e50; letter-spacing:0.5px; }
 .db-stat-number { font-size:2.2rem; font-weight:800; color:#2c3e50; line-height:1; }
@@ -235,36 +264,39 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 .db-filter-btn:hover { border-color:#4a90e2; color:#4a90e2; }
 .db-filter-btn.active { background:#2c3e50; color:white; border-color:#2c3e50; }
 
-.db-filter-tanggal { display:flex; align-items:center; gap:10px; flex-wrap:wrap; width:100%; }
-.db-filter-tanggal label { font-size:0.85rem; font-weight:600; color:#2c3e50; white-space:nowrap; }
+.db-filter-tanggal {
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap; width:100%;
+}
+.db-filter-tanggal label {
+    font-size:0.85rem; font-weight:600; color:#2c3e50; white-space:nowrap;
+}
 .db-input-kecil { width:auto !important; padding:8px 12px !important; font-size:0.85rem !important; }
 
 .db-btn-filter-tgl {
-    background:#2c3e50; color:white; border:none; padding:8px 16px;
-    border-radius:8px; font-size:0.85rem; cursor:pointer;
-    display:flex; align-items:center; gap:6px; transition:0.2s;
+    background:#2c3e50; color:white; border:none; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem; cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition:0.2s; white-space:nowrap;
 }
 .db-btn-filter-tgl:hover { background:#1a252f; }
 
 .db-btn-reset-tgl {
-    background:none; color:#e74c3c; border:1px solid #e74c3c; padding:8px 16px;
-    border-radius:8px; font-size:0.85rem; cursor:pointer;
-    display:flex; align-items:center; gap:6px; transition:0.2s;
+    background:none; color:#e74c3c; border:1px solid #e74c3c; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem; cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition:0.2s; white-space:nowrap;
 }
 .db-btn-reset-tgl:hover { background:#fdecea; }
 
-/* Tombol Hapus Semua */
 .db-btn-hapus-semua {
-    background:#e74c3c; color:white; border:none; padding:8px 16px;
-    border-radius:8px; font-size:0.85rem; cursor:pointer;
-    display:flex; align-items:center; gap:6px; transition:0.2s;
+    background:#e74c3c; color:white; border:none; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem; cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition:0.2s; white-space:nowrap;
 }
 .db-btn-hapus-semua:hover { background:#c0392b; }
 
 .db-btn-print {
-    margin-left:auto; background:#2c3e50; color:white; border:none; padding:8px 16px;
-    border-radius:8px; font-size:0.85rem; cursor:pointer;
-    display:flex; align-items:center; gap:6px; transition:0.2s;
+    margin-left:auto; background:#2c3e50; color:white; border:none; padding:8px 14px;
+    border-radius:8px; font-size:0.82rem; cursor:pointer;
+    display:flex; align-items:center; gap:5px; transition:0.2s; white-space:nowrap;
 }
 .db-btn-print:hover { background:#1a252f; }
 
@@ -310,6 +342,7 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 .db-modal-box {
     background:#fff; border-radius:18px; padding:30px;
     width:460px; max-width:95%; box-shadow:0 10px 40px rgba(0,0,0,0.15);
+    max-height:90vh; overflow-y:auto;
 }
 .db-modal-header {
     display:flex; justify-content:space-between; align-items:center;
@@ -323,7 +356,6 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 .db-modal-close:hover { background:#fdecea; color:#e74c3c; }
 .db-modal-desc { font-size:0.88rem; color:#555; margin-bottom:16px; }
 
-/* Modal foto */
 .modal-overlay {
     position:fixed; top:0; left:0; width:100%; height:100%;
     background:rgba(0,0,0,0.75); z-index:9999;
@@ -462,7 +494,7 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 .db-akun-edit-actions { display:flex; gap:10px; justify-content:flex-end; }
 
 /* ================================================ */
-/* POPUP USER (style.css)                           */
+/* POPUP USER                                       */
 /* ================================================ */
 .popup-img-overlay {
     position:fixed; top:0; left:0; width:100%; height:100%;
@@ -499,31 +531,63 @@ body { margin:0; padding:0; min-height:100vh; background:#f0f4f8; overflow-x:hid
 /* RESPONSIVE MOBILE                                */
 /* ================================================ */
 @media (max-width:992px) {
-    .db-hamburger { display:block; }
 
+    /* Tampilkan hamburger */
+    .db-hamburger { display:flex; align-items:center; justify-content:center; }
+
+    /* Sidebar: fixed, geser dari KIRI, full tinggi layar */
     .db-sidebar {
-        position:fixed; left:-280px; top:0; height:100vh;
-        width:260px; z-index:1001; transition:left 0.4s ease;
-        box-shadow:4px 0 20px rgba(0,0,0,0.15);
+        position:fixed;
+        top:0;
+        left:0;
+        height:100%;          /* full tinggi layar */
+        min-height:100vh;
+        width:270px;
+        z-index:1100;         /* di atas semua elemen */
+        transform:translateX(-110%);   /* awalnya tersembunyi ke kiri */
+        transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+        box-shadow:6px 0 30px rgba(0,0,0,0.18);
+        overflow-y:auto;      /* scroll jika konten panjang */
     }
-    .db-sidebar.active { left:0; }
 
-    .db-main { padding:20px 16px 20px 16px; }
+    /* Saat aktif → muncul */
+    .db-sidebar.active {
+        transform:translateX(0);
+    }
 
+    /* Main content tidak geser, full width */
+    .db-main {
+        padding:60px 14px 20px 14px; /* top padding beri ruang hamburger */
+        width:100%;
+        min-width:0;
+    }
+
+    /* Grid jadi 1 kolom */
     .db-stat-grid { grid-template-columns:1fr; gap:14px; }
     .db-preview-grid { grid-template-columns:1fr; gap:16px; }
 
+    /* Filter bar wrap */
     .db-filter-tanggal { flex-wrap:wrap; }
     .db-btn-print { margin-left:0; }
 
-    .db-page-title { font-size:1.3rem; }
-    .db-scroll-top { bottom:20px; right:20px; }
+    .db-page-title { font-size:1.25rem; }
+    .db-scroll-top { bottom:16px; right:16px; width:42px; height:42px; font-size:1rem; }
 }
 
 @media (max-width:600px) {
-    .db-main { padding:16px 12px; }
-    .db-form-card { padding:18px; }
-    .db-modal-box { padding:20px; }
+    .db-main { padding:58px 10px 16px; }
+    .db-form-card { padding:16px; }
+    .db-modal-box { padding:18px; }
     .db-filter-bar { gap:6px; }
-    .db-filter-btn { padding:7px 14px; font-size:0.8rem; }
+    .db-filter-btn { padding:7px 12px; font-size:0.8rem; }
+    .db-stat-number { font-size:1.8rem; }
+
+    /* Tombol filter lebih kecil di HP */
+    .db-btn-filter-tgl,
+    .db-btn-reset-tgl,
+    .db-btn-hapus-semua,
+    .db-btn-print {
+        padding:7px 10px;
+        font-size:0.78rem;
+    }
 }
